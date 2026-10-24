@@ -1,0 +1,158 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+  --gulasadar-green: #047857;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: #f6faf8;
+    color: #0f172a;
+    text-rendering: optimizeLegibility;
+  }
+
+  button,
+  a,
+  [role="button"],
+  select,
+  label[for],
+  summary {
+    cursor: pointer;
+  }
+
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible {
+    outline: 2px solid var(--gulasadar-green);
+    outline-offset: 3px;
+  }
+
+  ::selection {
+    background: #a7f3d0;
+    color: #064e3b;
+  }
+}
+
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(0.8deg);
+  }
+}
+
+@keyframes floatReverse {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(8px) rotate(-0.8deg);
+  }
+}
+
+@keyframes bubbleFloat {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translate(6px, -18px) scale(1.1);
+    opacity: 0.85;
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(1.08);
+  }
+}
+
+.animate-float-slow {
+  animation: floatSlow 6s ease-in-out infinite;
+}
+
+.animate-float-reverse {
+  animation: floatReverse 7s ease-in-out infinite;
+}
+
+.animate-bubble-1 {
+  animation: bubbleFloat 5s ease-in-out infinite;
+}
+
+.animate-bubble-2 {
+  animation: bubbleFloat 7s ease-in-out infinite 1.2s;
+}
+
+.animate-bubble-3 {
+  animation: bubbleFloat 6.5s ease-in-out infinite 2.5s;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 8s ease-in-out infinite;
+}
+
+@keyframes avatarBlink {
+  0%, 90%, 100% {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0.15);
+  }
+}
+
+@keyframes antennaWave {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(14deg);
+  }
+}
+
+@keyframes bounceDot {
+  0%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-avatar-blink {
+  animation: avatarBlink 4s infinite ease-in-out;
+  transform-origin: center;
+}
+
+.animate-antenna-wave {
+  animation: antennaWave 3s infinite ease-in-out;
+  transform-origin: bottom center;
+}
+
+.animate-bounce-dot-1 {
+  animation: bounceDot 1.4s infinite ease-in-out;
+}
+
+.animate-bounce-dot-2 {
+  animation: bounceDot 1.4s infinite ease-in-out 0.2s;
+}
+
+.animate-bounce-dot-3 {
+  animation: bounceDot 1.4s infinite ease-in-out 0.4s;
+}
+

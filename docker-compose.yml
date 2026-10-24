@@ -1,0 +1,9 @@
+services:
+  frontend:
+    build:
+      context: .
+      args:
+        # Alamat PUBLIK backend (dibaca browser). Contoh: https://api.gulasadar.contoh.com
+        NEXT_PUBLIC_GULASADAR_BASEURL: ${PUBLIC_API_URL:-http://localhost:4000}
+    ports: ["3000:3000"]
+    restart: unless-stopped

@@ -303,7 +303,7 @@ export default function LoginPage() {
               )}
 
               <div>
-                <label htmlFor="login-email" className="block text-xs font-semibold text-emerald-200/90 mb-1 pl-3">
+                <label htmlFor="username" className="block text-xs font-semibold text-emerald-200/90 mb-1 pl-3">
                   Email
                 </label>
                 <div className="relative">
@@ -313,7 +313,9 @@ export default function LoginPage() {
                     </span>
                   </span>
                   <input
-                    id="login-email"
+                    id="username"
+                    name="username"
+                    autoComplete="username"
                     type="email"
                     required
                     value={email}
@@ -325,7 +327,7 @@ export default function LoginPage() {
               </div>
 
               <div>
-                <label htmlFor="login-password" className="block text-xs font-semibold text-emerald-200/90 mb-1 pl-3">
+                <label htmlFor="password" className="block text-xs font-semibold text-emerald-200/90 mb-1 pl-3">
                   Password
                 </label>
                 <div className="relative">
@@ -335,7 +337,9 @@ export default function LoginPage() {
                     </span>
                   </span>
                   <input
-                    id="login-password"
+                    id="password"
+                    name="password"
+                    autoComplete="current-password"
                     type="password"
                     required
                     minLength={6}
@@ -350,6 +354,7 @@ export default function LoginPage() {
               {/* Tombol Aksi Pil */}
               <button
                 type="submit"
+                id="btn-submit"
                 disabled={isLoading}
                 className="mt-6 w-full rounded-full bg-[#276a52] py-4 text-sm font-extrabold uppercase tracking-widest text-white shadow-xl shadow-emerald-950/40 transition hover:bg-[#318063] hover:shadow-2xl active:scale-[0.99] disabled:opacity-60"
               >

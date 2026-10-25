@@ -1,10 +1,10 @@
 import { screen } from "@testing-library/react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { renderWithProviders } from "@/test-utils";
 import AppLayout from "./AppLayout";
 
 vi.mock("next/navigation", () => ({
-  usePathname: () => "/",
+  usePathname: vi.fn(),
   useRouter: vi.fn(),
 }));
 
@@ -13,6 +13,7 @@ describe("AppLayout", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(usePathname).mockReturnValue("/");
     vi.mocked(useRouter).mockReturnValue({ push } as unknown as ReturnType<typeof useRouter>);
     localStorage.clear();
   });
@@ -28,6 +29,12 @@ describe("AppLayout", () => {
   it("mengarahkan ke /login jika pengguna belum login dan bukan tamu", () => {
     renderWithProviders(<AppLayout><p>isi</p></AppLayout>);
     expect(push).toHaveBeenCalledWith("/login");
+  });
+
+  it("tidak mengarahkan ke /login pada halaman publik /bantuan", () => {
+    vi.mocked(usePathname).mockReturnValue("/bantuan");
+    renderWithProviders(<AppLayout><p>isi</p></AppLayout>);
+    expect(push).not.toHaveBeenCalled();
   });
 
   it("menyediakan tautan lewati ke konten dan panduan untuk pengguna baru", async () => {

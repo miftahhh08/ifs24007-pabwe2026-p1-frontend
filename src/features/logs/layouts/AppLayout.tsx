@@ -1,17 +1,22 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { IconHeartHandshake, IconShieldCheck } from "@tabler/icons-react";
 import Link from "next/link";
 import NavbarComponent from "../components/NavbarComponent";
 import HelpBanner from "@/features/health/components/HelpBanner";
 import { getAuthToken } from "@/helpers/apiHelper";
 
+// Halaman yang boleh dibuka tanpa login atau mode tamu.
+const PUBLIC_PATHS = ["/bantuan"];
+
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
+    if (PUBLIC_PATHS.includes(pathname)) return;
     try {
       const token = getAuthToken();
       const isGuest = localStorage.getItem("gulasadar:guest") === "true";
@@ -19,7 +24,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         router.push("/login");
       }
     } catch {}
-  }, [router]);
+  }, [router, pathname]);
 
   return (
     <div className="min-h-screen bg-[#f6faf8] text-slate-900">

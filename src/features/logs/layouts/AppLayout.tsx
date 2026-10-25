@@ -21,7 +21,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       const token = getAuthToken();
       const isGuest = localStorage.getItem("gulasadar:guest") === "true";
       if (!token && !isGuest) {
-        router.push("/login");
+        router.push("/auth/login");
       }
     } catch {}
   }, [router, pathname]);

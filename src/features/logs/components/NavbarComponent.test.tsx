@@ -29,13 +29,13 @@ describe("NavbarComponent", () => {
     expect(screen.getByRole("link", { name: /Risiko/ })).toHaveAttribute("aria-current", "page");
   });
 
-  it("menampilkan tautan Masuk ke /login saat belum login", () => {
+  it("menampilkan tautan Masuk ke /auth/login saat belum login", () => {
     vi.mocked(usePathname).mockReturnValue("/");
     renderWithProviders(<NavbarComponent />, { authUser: null });
 
     const link = screen.getByRole("link", { name: /Masuk/i });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", "/login");
+    expect(link).toHaveAttribute("href", "/auth/login");
   });
 
   it("menampilkan nama pengguna dan tombol keluar saat sudah login", async () => {

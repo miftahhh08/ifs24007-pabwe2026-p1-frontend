@@ -25,7 +25,7 @@ Buka `http://localhost:3000`.
 | `APP_PORT` | Port aplikasi (default 3000) |
 
 ## Halaman
-`/` Beranda · `/makanan` Cari makanan · `/label` Hitung dari label · `/risiko` Cek risiko · `/gula-darah` Catatan gula darah · `/sobat-gula` Chatbot · `/bantuan` Panduan dan FAQ
+`/auth/login` Masuk/Daftar · `/` Beranda · `/makanan` Cari makanan · `/label` Hitung dari label · `/risiko` Cek risiko · `/gula-darah` Catatan gula darah · `/sobat-gula` Chatbot · `/bantuan` Panduan dan FAQ
 
 ## Deploy dengan Docker
 ```bash

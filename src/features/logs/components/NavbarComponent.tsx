@@ -94,7 +94,7 @@ export default function NavbarComponent() {
                 </div>
               ) : (
                 <Link
-                  href="/login"
+                  href="/auth/login"
                   className="flex items-center gap-1.5 rounded-xl bg-emerald-700 px-3.5 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-emerald-800"
                 >
                   <IconUser size={16} />

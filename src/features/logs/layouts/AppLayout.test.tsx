@@ -26,12 +26,12 @@ describe("AppLayout", () => {
     expect(screen.getByText(/bukan diagnosis medis/)).toBeInTheDocument();
   });
 
-  it("mengarahkan ke /login jika pengguna belum login dan bukan tamu", () => {
+  it("mengarahkan ke /auth/login jika pengguna belum login dan bukan tamu", () => {
     renderWithProviders(<AppLayout><p>isi</p></AppLayout>);
-    expect(push).toHaveBeenCalledWith("/login");
+    expect(push).toHaveBeenCalledWith("/auth/login");
   });
 
-  it("tidak mengarahkan ke /login pada halaman publik /bantuan", () => {
+  it("tidak mengarahkan ke /auth/login pada halaman publik /bantuan", () => {
     vi.mocked(usePathname).mockReturnValue("/bantuan");
     renderWithProviders(<AppLayout><p>isi</p></AppLayout>);
     expect(push).not.toHaveBeenCalled();

@@ -10,7 +10,6 @@ import {
   IconInfoCircle,
   IconLoader2,
   IconPhoto,
-  IconPlus,
   IconRefresh,
   IconSparkles,
   IconTrash,
@@ -21,47 +20,11 @@ import { useAppDispatch } from "@/hooks/redux";
 import { asyncAddLog } from "@/features/logs/states/action";
 import { identifyPhoto } from "../api/healthApi";
 import { cardClass } from "./PageHero";
+import PhotoFoodItem from "./PhotoFoodItem";
+import PhotoHelpPanel from "./PhotoHelpPanel";
+import { clampServing, COMMON_HINTS, readBase64, trafficLightBadge } from "./photoIdentifyHelpers";
 
-const COMMON_HINTS = [
-  { label: "Es Teh Manis", hint: "es teh" },
-  { label: "Kopi Susu Aren", hint: "kopi susu" },
-  { label: "Donat", hint: "donat" },
-  { label: "Boba Brown Sugar", hint: "boba" },
-  { label: "Pisang Goreng", hint: "pisang goreng" },
-  { label: "Martabak Manis", hint: "martabak" },
-  { label: "Cokelat / Snack", hint: "cokelat" },
-  { label: "Biskuit / Wafer", hint: "biskuit" },
-  { label: "Susu UHT", hint: "susu uht" },
-  { label: "Soda", hint: "soda" },
-];
-
-function readBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result).split(",")[1] ?? "");
-    reader.onerror = () => reject(new Error("Gagal membaca gambar"));
-    reader.readAsDataURL(file);
-  });
-}
-
-export function trafficLightBadge(sugarG: number) {
-  if (sugarG <= 5) {
-    return {
-      text: "Rendah (Aman)",
-      className: "bg-emerald-100 text-emerald-800 border-emerald-300",
-    };
-  }
-  if (sugarG <= 15) {
-    return {
-      text: "Sedang (Batasi)",
-      className: "bg-amber-100 text-amber-800 border-amber-300",
-    };
-  }
-  return {
-    text: "Tinggi (Waspada)",
-    className: "bg-red-100 text-red-800 border-red-300",
-  };
-}
+export { trafficLightBadge };
 
 export default function PhotoIdentify() {
   const dispatch = useAppDispatch();
@@ -132,9 +95,7 @@ export default function PhotoIdentify() {
 
   function changeServing(foodId: string, delta: number) {
     setServingsMap((prev) => {
-      const current = prev[foodId];
-      const next = Math.max(0.5, Math.min(10, Math.round((current + delta) * 10) / 10));
-      return { ...prev, [foodId]: next };
+      return { ...prev, [foodId]: clampServing(prev[foodId], delta) };
     });
   }
 
@@ -165,19 +126,7 @@ export default function PhotoIdentify() {
         </button>
       </div>
 
-      {showHelp && (
-        <div className="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-4 text-xs leading-relaxed text-emerald-950 animate-in fade-in">
-          <p className="font-bold mb-1 flex items-center gap-1.5">
-            <IconInfoCircle size={16} className="text-emerald-700" />
-            Panduan Evaluasi Heuristik (Status & Deteksi Otomatis):
-          </p>
-          <ul className="list-disc pl-5 space-y-1">
-            <li><strong>Unggah Foto:</strong> Masukkan foto makanan rumahan, jajanan, atau tabel Informasi Nilai Gizi kemasan.</li>
-            <li><strong>Prinsip Aman:</strong> Sistem mencocokkan makanan dengan basis data gizi terpercaya sesuai anjuran batas Kemenkes RI (50 g/hari).</li>
-            <li><strong>Petunjuk Cepat:</strong> Jika file foto memiliki nama umum (misal hasil tangkapan layar/kamera), kamu bisa memilih petunjuk makanan di bawah untuk pencocokan instan.</li>
-          </ul>
-        </div>
-      )}
+      {showHelp && <PhotoHelpPanel />}
 
       {/* Bagian 1: Kotak Unggah / Pratinjau Foto (Heuristic 1: Visibility of system status) */}
       {!file ? (
@@ -298,90 +247,16 @@ export default function PhotoIdentify() {
           </div>
 
           <div className="space-y-3">
-            {result.foods.map((food) => {
-              const currentServings = servingsMap[food.id];
-              const totalSugar = Math.round(food.sugar_g * currentServings * 10) / 10;
-              const spoons = Math.round((totalSugar / 12.5) * 10) / 10;
-              const badge = trafficLightBadge(totalSugar);
-              const isAdded = addedMap[food.id];
-
-              return (
-                <div
-                  key={food.id}
-                  className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-slate-100 bg-slate-50/70 p-4 transition hover:bg-slate-50"
-                >
-                  <div className="min-w-0 flex-1 space-y-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h4 className="text-sm font-extrabold text-slate-900 sm:text-base">
-                        {food.name}
-                      </h4>
-                      <span className={`rounded-full border px-2.5 py-0.5 text-xs font-bold ${badge.className}`}>
-                        {badge.text}
-                      </span>
-                    </div>
-
-                    <p className="text-xs text-slate-500">
-                      Porsi standar: {food.portion} · {food.category}
-                    </p>
-
-                    <div className="flex items-baseline gap-2 pt-1">
-                      <span className="text-lg font-black text-slate-900">{totalSugar} g</span>
-                      <span className="text-xs font-medium text-slate-500">
-                        gula (~{spoons} sdm gula pasir)
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Pengaturan Porsi & Tombol Catat (Heuristic 3 & 7: User control and efficiency) */}
-                  <div className="flex items-center gap-3 shrink-0">
-                    <div className="flex items-center rounded-xl border border-slate-200 bg-white p-1 text-xs font-bold text-slate-700">
-                      <button
-                        type="button"
-                        onClick={() => changeServing(food.id, -0.5)}
-                        disabled={currentServings <= 0.5}
-                        className="rounded-lg px-2 py-1 hover:bg-slate-100 disabled:opacity-40"
-                        title="Kurangi porsi"
-                      >
-                        -
-                      </button>
-                      <span className="px-2">{currentServings} porsi</span>
-                      <button
-                        type="button"
-                        onClick={() => changeServing(food.id, 0.5)}
-                        disabled={currentServings >= 10}
-                        className="rounded-lg px-2 py-1 hover:bg-slate-100 disabled:opacity-40"
-                        title="Tambah porsi"
-                      >
-                        +
-                      </button>
-                    </div>
-
-                    <button
-                      type="button"
-                      disabled={isAdded}
-                      onClick={() => handleAddLog(food.id)}
-                      className={`inline-flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-xs font-bold transition shadow-sm ${
-                        isAdded
-                          ? "bg-slate-200 text-slate-600 cursor-default"
-                          : "bg-emerald-700 text-white hover:bg-emerald-800 shadow-emerald-700/10"
-                      }`}
-                    >
-                      {isAdded ? (
-                        <>
-                          <IconCheck size={16} />
-                          <span>Tercatat</span>
-                        </>
-                      ) : (
-                        <>
-                          <IconPlus size={16} />
-                          <span>Catat Hari Ini</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
+            {result.foods.map((food) => (
+              <PhotoFoodItem
+                key={food.id}
+                food={food}
+                servings={servingsMap[food.id]}
+                isAdded={Boolean(addedMap[food.id])}
+                onChangeServing={changeServing}
+                onAdd={handleAddLog}
+              />
+            ))}
           </div>
         </div>
       )}

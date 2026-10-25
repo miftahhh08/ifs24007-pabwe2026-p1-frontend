@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { IconLock, IconMail, IconUser, IconX } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { asyncLogin, asyncRegister } from "../states/action";
+import { validateAuthForm } from "../validation";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -38,22 +39,15 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
     e.preventDefault();
     setFormError(null);
 
+    const errorMessage = validateAuthForm(tab, { name, email, password });
+    if (errorMessage) {
+      setFormError(errorMessage);
+      return;
+    }
     const cleanEmail = email.trim();
-    if (!cleanEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
-      setFormError("Format email tidak valid");
-      return;
-    }
-    if (!password || password.length < 6) {
-      setFormError("Kata sandi minimal 6 karakter");
-      return;
-    }
+    const cleanName = name.trim();
 
     if (tab === "register") {
-      const cleanName = name.trim();
-      if (cleanName.length < 2 || cleanName.length > 100) {
-        setFormError("Nama lengkap wajib diisi (2-100 karakter)");
-        return;
-      }
       dispatch(
         asyncRegister({ name: cleanName, email: cleanEmail, password }, () => {
           onClose();

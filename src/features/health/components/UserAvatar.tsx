@@ -19,6 +19,7 @@ export default function UserAvatar({ size = "md", className = "", name }: UserAv
   return (
     <div
       className={`relative inline-flex items-center justify-center shrink-0 rounded-2xl bg-gradient-to-tr from-emerald-800 to-teal-600 text-white font-extrabold shadow-sm border border-emerald-700/30 ${sizeMap[size]} ${className}`}
+      role="img"
       aria-label={name ? `Avatar ${name}` : "Avatar Pengguna"}
     >
       {initial ? <span>{initial}</span> : <IconUser size={size === "sm" ? 16 : 20} />}

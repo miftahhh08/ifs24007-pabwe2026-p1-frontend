@@ -32,6 +32,7 @@ export default function SobatGulaAvatar({
   return (
     <div
       className={`relative inline-flex items-center justify-center shrink-0 ${sizeMap[size]} ${className}`}
+      role="img"
       aria-label="Avatar Sobat Gula"
     >
       {/* Halo Glow Bergerak di Belakang Avatar */}

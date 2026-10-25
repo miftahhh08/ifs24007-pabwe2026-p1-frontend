@@ -27,7 +27,7 @@ export default function QuickAdd() {
       <p className="mt-1 text-sm text-slate-500">Tekan untuk mencatat 1 porsi. Bisa diurungkan setelahnya.</p>
       <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
         {foods.map((f) => (
-          <button key={f.id} onClick={() => dispatch(asyncAddLog(f.id, 1))} aria-label={`Catat cepat ${f.name}`}
+          <button key={f.id} onClick={() => dispatch(asyncAddLog(f.id, 1))}
             className="flex items-center justify-between rounded-2xl border border-slate-200 px-4 py-3 text-left text-sm transition hover:border-emerald-300 hover:bg-emerald-50">
             <span><strong className="block text-slate-800">{f.name}</strong><span className="text-xs text-slate-500">{f.sugar_g} g gula · {f.portion}</span></span>
             <IconPlus size={18} className="text-emerald-700" />

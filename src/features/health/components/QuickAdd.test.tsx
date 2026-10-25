@@ -17,7 +17,7 @@ describe("QuickAdd", () => {
     vi.mocked(addLog).mockResolvedValue({ id: 1, food: "Es teh", servings: 1, sugar_g: 20 });
     vi.mocked(getToday).mockResolvedValue({ total_sugar_g: 20, limit_g: 50, percent: 40, logs: [] });
     renderWithProviders(<QuickAdd />);
-    await userEvent.click(await screen.findByRole("button", { name: "Catat cepat Nama es-teh-manis" }));
+    await userEvent.click(await screen.findByRole("button", { name: /Nama es-teh-manis/ }));
     await vi.waitFor(() => expect(addLog).toHaveBeenCalledWith("es-teh-manis", 1));
     expect(screen.queryByText("Nama tidak-populer")).not.toBeInTheDocument();
   });

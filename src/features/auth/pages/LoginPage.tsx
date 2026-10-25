@@ -80,7 +80,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-[#eef7f2] font-sans">
+    <main className="relative min-h-screen w-full overflow-hidden bg-[#eef7f2] font-sans">
       <div className="grid min-h-screen grid-cols-1 lg:grid-cols-12">
         {/* SISI KIRI: Ilustrasi Belanja Makanan Sehat, Wave Organik, & Elemen Bergerak */}
         <section className="relative flex flex-col justify-between overflow-hidden p-6 sm:p-10 lg:col-span-7 lg:p-12">
@@ -377,6 +377,6 @@ export default function LoginPage() {
           </div>
         </section>
       </div>
-    </div>
+    </main>
   );
 }

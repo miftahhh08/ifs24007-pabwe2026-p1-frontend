@@ -158,12 +158,14 @@ export default function ChatPage() {
         )}
 
         {/* Daftar Gelembung Obrolan */}
-        <ul
-          tabIndex={0} className="max-h-[30rem] min-h-56 space-y-4 overflow-y-auto pr-1"
+        <div
+          tabIndex={0}
+          className="max-h-[30rem] min-h-56 overflow-y-auto pr-1"
           role="log"
           aria-label="Percakapan"
           aria-live="polite"
         >
+        <ul className="space-y-4">
           {messages.map((m, i) => {
             const isUser = m.from === "user";
             return (
@@ -211,6 +213,7 @@ export default function ChatPage() {
 
           <li ref={endRef} aria-hidden="true" />
         </ul>
+        </div>
 
         {/* Saran Pertanyaan Cepat (Chips) */}
         {chips.length > 0 && (
@@ -218,7 +221,7 @@ export default function ChatPage() {
             <p className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">
               Pertanyaan Cepat
             </p>
-            <div className="flex flex-wrap gap-2" aria-label="Pertanyaan cepat">
+            <div className="flex flex-wrap gap-2" role="group" aria-label="Pertanyaan cepat">
               {chips.map((c) => (
                 <button
                   key={c}

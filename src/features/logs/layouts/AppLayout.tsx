@@ -1,31 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
-import { usePathname, useRouter } from "next/navigation";
-import { IconHeartHandshake, IconShieldCheck } from "@tabler/icons-react";
 import Link from "next/link";
+import { IconHeartHandshake, IconShieldCheck } from "@tabler/icons-react";
 import NavbarComponent from "../components/NavbarComponent";
 import HelpBanner from "@/features/health/components/HelpBanner";
-import { getAuthToken } from "@/helpers/apiHelper";
 
-// Halaman yang boleh dibuka tanpa login atau mode tamu.
-const PUBLIC_PATHS = ["/bantuan"];
-
+// Semua halaman dashboard dapat dibuka tanpa login (mode tamu).
+// Pengguna yang ingin menyimpan data cukup memakai tautan "Masuk" di navbar.
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
-  const pathname = usePathname();
-
-  useEffect(() => {
-    if (PUBLIC_PATHS.includes(pathname)) return;
-    try {
-      const token = getAuthToken();
-      const isGuest = localStorage.getItem("gulasadar:guest") === "true";
-      if (!token && !isGuest) {
-        router.push("/auth/login");
-      }
-    } catch {}
-  }, [router, pathname]);
-
   return (
     <div className="min-h-screen bg-[#f6faf8] text-slate-900">
       <a href="#konten" className="sr-only z-50 rounded-lg bg-white px-4 py-2 font-bold text-emerald-800 focus:not-sr-only focus:fixed focus:left-4 focus:top-4">Lewati ke konten</a>

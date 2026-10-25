@@ -26,9 +26,10 @@ describe("AppLayout", () => {
     expect(screen.getByText(/bukan diagnosis medis/)).toBeInTheDocument();
   });
 
-  it("mengarahkan ke /auth/login jika pengguna belum login dan bukan tamu", () => {
+  it("tidak mengarahkan ke /auth/login walau pengguna belum login", () => {
     renderWithProviders(<AppLayout><p>isi</p></AppLayout>);
-    expect(push).toHaveBeenCalledWith("/auth/login");
+    expect(screen.getByText("isi")).toBeInTheDocument();
+    expect(push).not.toHaveBeenCalled();
   });
 
   it("tidak mengarahkan ke /auth/login pada halaman publik /bantuan", () => {

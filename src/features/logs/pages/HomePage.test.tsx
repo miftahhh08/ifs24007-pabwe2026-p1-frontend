@@ -56,7 +56,7 @@ describe("HomePage", () => {
   it("menampilkan warna kuning ketika persentase di atas 60%", async () => {
     vi.mocked(getToday).mockResolvedValue(data(70));
     renderWithProviders(<HomePage />);
-    expect(await screen.findByText("70%")).toHaveClass("text-amber-600");
+    expect(await screen.findByText("70%")).toHaveClass("text-amber-700");
   });
 
   it("menampilkan keadaan kosong", async () => {

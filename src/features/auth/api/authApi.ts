@@ -7,7 +7,7 @@ export async function registerApi(input: RegisterInput): Promise<AuthResponse> {
     body: input,
   });
   if (res.token) {
-    setAuthToken(res.token);
+    await setAuthToken(res.token);
   }
   return res;
 }
@@ -18,7 +18,7 @@ export async function loginApi(input: LoginInput): Promise<AuthResponse> {
     body: input,
   });
   if (res.token) {
-    setAuthToken(res.token);
+    await setAuthToken(res.token);
   }
   return res;
 }
@@ -35,6 +35,6 @@ export async function logoutApi(): Promise<{ message: string }> {
     });
     return res;
   } finally {
-    removeAuthToken();
+    await removeAuthToken();
   }
 }

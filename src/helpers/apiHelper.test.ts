@@ -1,4 +1,4 @@
-import { apiRequest, getAuthToken, setAuthToken, removeAuthToken } from "./apiHelper";
+import { apiRequest, hasAuthSession, setAuthToken, removeAuthToken } from "./apiHelper";
 
 const okResponse = (data: unknown) => ({ ok: true, json: async () => ({ data }) }) as Response;
 
@@ -49,56 +49,43 @@ describe("apiRequest", () => {
     await expect(apiRequest("/x")).rejects.toThrow("Tidak dapat terhubung ke server");
   });
 
-  it("menyimpan, membaca, dan menghapus auth token", () => {
-    sessionStorage.clear();
-    expect(getAuthToken()).toBeNull();
-    setAuthToken("my-token-123");
-    expect(getAuthToken()).toBe("my-token-123");
-    removeAuthToken();
-    expect(getAuthToken()).toBeNull();
+  it("mengirim request lewat /api/proxy tanpa header Authorization", async () => {
+    const spy = vi.spyOn(globalThis, "fetch").mockResolvedValue(okResponse({}));
+    await apiRequest("/api/auth/me");
+    expect(spy.mock.calls[0][0]).toBe("/api/proxy/api/auth/me");
+    expect(spy.mock.calls[0][1]?.headers).toEqual({ "Content-Type": "application/json" });
+  });
 
+  it("setAuthToken mengirim token ke /api/session dan menandai sesi aktif", async () => {
+    localStorage.clear();
+    expect(hasAuthSession()).toBe(false);
+    const spy = vi.spyOn(globalThis, "fetch").mockResolvedValue({ ok: true } as Response);
+    await setAuthToken("rahasia-123");
+    expect(spy).toHaveBeenCalledWith("/api/session", expect.objectContaining({ method: "POST" }));
+    expect(hasAuthSession()).toBe(true);
+    // token tidak boleh tersimpan di storage maupun cookie yang bisa dibaca JS
+    expect(JSON.stringify({ ...localStorage })).not.toContain("rahasia-123");
+    expect(document.cookie).not.toContain("rahasia-123");
+  });
+
+  it("setAuthToken melempar error dan tidak menandai sesi jika server menolak", async () => {
+    localStorage.clear();
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({ ok: false } as Response);
+    await expect(setAuthToken("x")).rejects.toThrow("Gagal menyimpan sesi login");
+    expect(hasAuthSession()).toBe(false);
+  });
+
+  it("removeAuthToken menghapus penanda dan tetap aman saat jaringan gagal", async () => {
+    localStorage.setItem("gulasadar:session", "1");
+    vi.spyOn(globalThis, "fetch").mockRejectedValue(new TypeError("offline"));
+    await expect(removeAuthToken()).resolves.toBeUndefined();
+    expect(hasAuthSession()).toBe(false);
+  });
+
+  it("hasAuthSession aman saat storage error", () => {
     vi.spyOn(Storage.prototype, "getItem").mockImplementationOnce(() => {
       throw new Error("storage error");
     });
-    expect(getAuthToken()).toBeNull();
-
-    vi.spyOn(Storage.prototype, "setItem").mockImplementationOnce(() => {
-      throw new Error("storage error");
-    });
-    expect(() => setAuthToken("x")).not.toThrow();
-
-    vi.spyOn(Storage.prototype, "removeItem").mockImplementationOnce(() => {
-      throw new Error("storage error");
-    });
-    expect(() => removeAuthToken()).not.toThrow();
-
-    const origWindow = globalThis.window;
-    // @ts-expect-error simulate SSR
-    delete globalThis.window;
-    expect(getAuthToken()).toBeNull();
-    expect(() => setAuthToken("x")).not.toThrow();
-    expect(() => removeAuthToken()).not.toThrow();
-    globalThis.window = origWindow;
-  });
-
-  it("menyertakan header Authorization saat auth token ada", async () => {
-    setAuthToken("secret-token");
-    const spy = vi.spyOn(globalThis, "fetch").mockResolvedValue(okResponse({}));
-    await apiRequest("/api/auth/me");
-    expect(spy.mock.calls[0][1]?.headers).toEqual({
-      "Content-Type": "application/json",
-      Authorization: "Bearer secret-token",
-    });
-    removeAuthToken();
-  });
-
-  it("tidak menyimpan token di localStorage maupun cookie", () => {
-    localStorage.clear();
-    setAuthToken("aman-token");
-    expect(localStorage.length).toBe(0);
-    expect(document.cookie).not.toContain("aman-token");
-    expect(getAuthToken()).toBe("aman-token");
-    removeAuthToken();
-    expect(getAuthToken()).toBeNull();
+    expect(hasAuthSession()).toBe(false);
   });
 });

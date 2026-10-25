@@ -11,7 +11,7 @@ import {
   IconUserCheck,
 } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
-import { getAuthToken } from "@/helpers/apiHelper";
+import { hasAuthSession } from "@/helpers/apiHelper";
 import { disableGuestMode, enableGuestMode } from "@/helpers/guestMode";
 import { asyncLogin, asyncRegister } from "../states/action";
 import { validateAuthForm } from "../validation";
@@ -31,7 +31,7 @@ export default function LoginPage() {
   const [formError, setFormError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (authUser || getAuthToken()) {
+    if (authUser || hasAuthSession()) {
       router.push("/");
     }
   }, [authUser, router]);

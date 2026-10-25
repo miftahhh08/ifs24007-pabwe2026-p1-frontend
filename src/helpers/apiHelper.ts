@@ -1,45 +1,55 @@
-import { BASE_URL } from "@/lib/config";
-
 export interface ApiOptions {
   method?: "GET" | "POST" | "PUT" | "DELETE";
   query?: Record<string, string | number | undefined>;
   body?: unknown;
 }
 
-const TOKEN_KEY = "gulasadar:token";
+// Token login disimpan server-side sebagai cookie HttpOnly (lihat /api/session) dan
+// ditambahkan oleh /api/proxy. Di browser hanya ada penanda non-rahasia ini, supaya
+// aplikasi tahu perlu memeriksa sesi tanpa melakukan request yang pasti gagal.
+const SESSION_HINT_KEY = "gulasadar:session";
 
-// Token hanya disimpan di sessionStorage: terikat ke satu tab, hilang saat tab ditutup,
-// dan tidak ikut terkirim otomatis ke server (berbeda dengan cookie yang bisa dibaca JS).
-// Untuk keamanan penuh, backend sebaiknya menerbitkan cookie HttpOnly.
-export function getAuthToken(): string | null {
-  if (typeof window === "undefined") return null;
+function setSessionHint(active: boolean): void {
   try {
-    return sessionStorage.getItem(TOKEN_KEY);
-  } catch {
-    return null;
-  }
-}
-
-export function setAuthToken(token: string): void {
-  if (typeof window === "undefined") return;
-  try {
-    sessionStorage.setItem(TOKEN_KEY, token);
+    if (active) localStorage.setItem(SESSION_HINT_KEY, "1");
+    else localStorage.removeItem(SESSION_HINT_KEY);
   } catch {
     /* penyimpanan tidak tersedia */
   }
 }
 
-export function removeAuthToken(): void {
-  if (typeof window === "undefined") return;
+export function hasAuthSession(): boolean {
+  if (typeof window === "undefined") return false;
   try {
-    sessionStorage.removeItem(TOKEN_KEY);
+    return localStorage.getItem(SESSION_HINT_KEY) === "1";
   } catch {
-    /* penyimpanan tidak tersedia */
+    return false;
+  }
+}
+
+export async function setAuthToken(token: string): Promise<void> {
+  if (typeof window === "undefined") return;
+  const res = await fetch("/api/session", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token }),
+  });
+  if (!res.ok) throw new Error("Gagal menyimpan sesi login");
+  setSessionHint(true);
+}
+
+export async function removeAuthToken(): Promise<void> {
+  if (typeof window === "undefined") return;
+  setSessionHint(false);
+  try {
+    await fetch("/api/session", { method: "DELETE" });
+  } catch {
+    /* sesi di server akan kedaluwarsa dengan sendirinya */
   }
 }
 
 /**
- * Wrapper fetch ke REST API GulaSadar (Express).
+ * Wrapper fetch ke REST API GulaSadar (Express) lewat /api/proxy.
  * Server mengembalikan { data } saat sukses dan { error } saat gagal.
  */
 export async function apiRequest<T>(path: string, options: ApiOptions = {}): Promise<T> {
@@ -50,13 +60,9 @@ export async function apiRequest<T>(path: string, options: ApiOptions = {}): Pro
     if (value !== undefined) params.set(key, String(value));
   });
   const qs = params.toString();
-  const url = `${BASE_URL}${path}${qs ? `?${qs}` : ""}`;
+  const url = `/api/proxy${path}${qs ? `?${qs}` : ""}`;
 
   const headers: Record<string, string> = { "Content-Type": "application/json" };
-  const token = getAuthToken();
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
 
   let res: Response;
   try {

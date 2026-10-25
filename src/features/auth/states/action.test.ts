@@ -1,5 +1,5 @@
 import { showErrorDialog, showSuccessDialog } from "@/helpers/toolsHelper";
-import { getAuthToken, removeAuthToken } from "@/helpers/apiHelper";
+import { hasAuthSession, removeAuthToken } from "@/helpers/apiHelper";
 import { getMeApi, loginApi, logoutApi, registerApi } from "../api/authApi";
 import {
   AuthActionType,
@@ -17,7 +17,7 @@ vi.mock("@/helpers/toolsHelper", () => ({
 }));
 
 vi.mock("@/helpers/apiHelper", () => ({
-  getAuthToken: vi.fn(),
+  hasAuthSession: vi.fn(),
   removeAuthToken: vi.fn(),
 }));
 
@@ -47,7 +47,7 @@ describe("auth action", () => {
 
   describe("asyncCheckAuth", () => {
     it("tidak melakukan apa pun jika token tidak ada", async () => {
-      vi.mocked(getAuthToken).mockReturnValue(null);
+      vi.mocked(hasAuthSession).mockReturnValue(false);
       const dispatch = vi.fn();
       await asyncCheckAuth()(dispatch);
       expect(dispatch).not.toHaveBeenCalled();
@@ -55,7 +55,7 @@ describe("auth action", () => {
     });
 
     it("memuat profil pengguna jika token valid", async () => {
-      vi.mocked(getAuthToken).mockReturnValue("tok-123");
+      vi.mocked(hasAuthSession).mockReturnValue(true);
       const user = { id: 1, name: "Budi", email: "budi@example.com" };
       vi.mocked(getMeApi).mockResolvedValue(user);
 
@@ -68,7 +68,7 @@ describe("auth action", () => {
     });
 
     it("menghapus token dan set user null jika getMeApi gagal", async () => {
-      vi.mocked(getAuthToken).mockReturnValue("tok-expired");
+      vi.mocked(hasAuthSession).mockReturnValue(true);
       vi.mocked(getMeApi).mockRejectedValue(new Error("Sesi berakhir"));
 
       const dispatch = vi.fn();

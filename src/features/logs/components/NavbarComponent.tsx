@@ -16,6 +16,7 @@ import {
 } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { asyncLogout } from "@/features/auth/states/action";
+import { disableGuestMode } from "@/helpers/guestMode";
 
 const MENUS = [
   { href: "/", label: "Beranda", Icon: IconHome },
@@ -80,9 +81,7 @@ export default function NavbarComponent() {
                   <button
                     type="button"
                     onClick={() => {
-                      try {
-                        localStorage.removeItem("gulasadar:guest");
-                      } catch {}
+                      disableGuestMode();
                       dispatch(asyncLogout());
                     }}
                     aria-label="Keluar akun"

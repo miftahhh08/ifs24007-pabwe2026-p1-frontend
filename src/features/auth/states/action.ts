@@ -1,6 +1,7 @@
 import type { ThunkAppDispatch } from "@/types/action";
 import type { LoginInput, RegisterInput, User } from "@/types";
 import { showErrorDialog, showSuccessDialog } from "@/helpers/toolsHelper";
+import { getErrorMessage } from "@/helpers/errorHelper";
 import { getAuthToken, removeAuthToken } from "@/helpers/apiHelper";
 import { getMeApi, loginApi, logoutApi, registerApi } from "../api/authApi";
 import { asyncSetToday } from "@/features/logs/states/action";
@@ -49,7 +50,7 @@ export function asyncRegister(input: RegisterInput, onSuccess?: () => void) {
       onSuccess?.();
       await dispatch(asyncSetToday());
     } catch (error) {
-      showErrorDialog((error as Error).message);
+      showErrorDialog(getErrorMessage(error));
     } finally {
       dispatch(setIsAuthLoadingAction(false));
     }
@@ -66,7 +67,7 @@ export function asyncLogin(input: LoginInput, onSuccess?: () => void) {
       onSuccess?.();
       await dispatch(asyncSetToday());
     } catch (error) {
-      showErrorDialog((error as Error).message);
+      showErrorDialog(getErrorMessage(error));
     } finally {
       dispatch(setIsAuthLoadingAction(false));
     }
@@ -82,7 +83,7 @@ export function asyncLogout() {
       showSuccessDialog("Berhasil keluar");
       await dispatch(asyncSetToday());
     } catch (error) {
-      showErrorDialog((error as Error).message);
+      showErrorDialog(getErrorMessage(error));
     } finally {
       dispatch(setIsAuthLoadingAction(false));
     }

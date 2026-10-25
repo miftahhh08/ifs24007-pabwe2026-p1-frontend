@@ -50,7 +50,7 @@ describe("apiRequest", () => {
   });
 
   it("menyimpan, membaca, dan menghapus auth token", () => {
-    localStorage.clear();
+    sessionStorage.clear();
     expect(getAuthToken()).toBeNull();
     setAuthToken("my-token-123");
     expect(getAuthToken()).toBe("my-token-123");
@@ -92,28 +92,13 @@ describe("apiRequest", () => {
     removeAuthToken();
   });
 
-  it("tetap membaca token dari cookie saat localStorage kosong", () => {
+  it("tidak menyimpan token di localStorage maupun cookie", () => {
     localStorage.clear();
-    setAuthToken("cookie-token");
-    localStorage.clear();
-    expect(getAuthToken()).toBe("cookie-token");
+    setAuthToken("aman-token");
+    expect(localStorage.length).toBe(0);
+    expect(document.cookie).not.toContain("aman-token");
+    expect(getAuthToken()).toBe("aman-token");
     removeAuthToken();
     expect(getAuthToken()).toBeNull();
-  });
-
-  it("tidak error saat cookie tidak bisa dibaca atau ditulis", () => {
-    const spy = vi.spyOn(document, "cookie", "get").mockImplementation(() => {
-      throw new Error("cookie error");
-    });
-    expect(getAuthToken()).toBeNull();
-    spy.mockRestore();
-
-    const setSpy = vi.spyOn(document, "cookie", "set").mockImplementation(() => {
-      throw new Error("cookie error");
-    });
-    expect(() => setAuthToken("x")).not.toThrow();
-    expect(() => removeAuthToken()).not.toThrow();
-    setSpy.mockRestore();
-    removeAuthToken();
   });
 });

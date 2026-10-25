@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { IconFlame } from "@tabler/icons-react";
 import { showErrorDialog } from "@/helpers/toolsHelper";
+import { getErrorMessage } from "@/helpers/errorHelper";
 import { getStats } from "@/features/logs/api/logApi";
 import type { StatsData } from "@/types";
 
@@ -10,7 +11,7 @@ export default function TrendCard() {
   const [stats, setStats] = useState<StatsData | null>(null);
 
   useEffect(() => {
-    getStats().then(setStats).catch((error: Error) => showErrorDialog(error.message));
+    getStats().then(setStats).catch((error: Error) => showErrorDialog(getErrorMessage(error)));
   }, []);
 
   if (!stats) return null;

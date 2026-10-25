@@ -12,6 +12,7 @@ import {
 } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { getAuthToken } from "@/helpers/apiHelper";
+import { disableGuestMode, enableGuestMode } from "@/helpers/guestMode";
 import { asyncLogin, asyncRegister } from "../states/action";
 import { validateAuthForm } from "../validation";
 import LoginIllustration from "../components/LoginIllustration";
@@ -35,9 +36,7 @@ export default function LoginPage() {
   }, [authUser, router]);
 
   function onAuthSuccess() {
-    try {
-      localStorage.removeItem("gulasadar:guest");
-    } catch {}
+    disableGuestMode();
     router.push("/");
   }
 
@@ -65,9 +64,7 @@ export default function LoginPage() {
   }
 
   function handleGuestMode() {
-    try {
-      localStorage.setItem("gulasadar:guest", "true");
-    } catch {}
+    enableGuestMode();
     router.push("/");
   }
 

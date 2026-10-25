@@ -15,6 +15,7 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 import { showErrorDialog } from "@/helpers/toolsHelper";
+import { getErrorMessage } from "@/helpers/errorHelper";
 import type { IdentifyResult } from "@/types";
 import { useAppDispatch } from "@/hooks/redux";
 import { asyncAddLog } from "@/features/logs/states/action";
@@ -81,7 +82,7 @@ export default function PhotoIdentify() {
       });
       setServingsMap(initialServings);
     } catch (error) {
-      showErrorDialog((error as Error).message);
+      showErrorDialog(getErrorMessage(error));
     } finally {
       setBusy(false);
     }

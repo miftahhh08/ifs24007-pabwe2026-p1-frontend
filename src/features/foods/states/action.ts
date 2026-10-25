@@ -1,6 +1,7 @@
 import type { ThunkAppDispatch } from "@/types/action";
 import type { Food } from "@/types";
 import { showErrorDialog } from "@/helpers/toolsHelper";
+import { getErrorMessage } from "@/helpers/errorHelper";
 import { searchFoods } from "../api/foodApi";
 
 export const FoodActionType = {
@@ -26,7 +27,7 @@ export function asyncSetFoods(q: string) {
     try {
       dispatch(receiveFoodsAction(await searchFoods(q)));
     } catch (error) {
-      showErrorDialog(error.message);
+      showErrorDialog(getErrorMessage(error));
     } finally {
       dispatch(setIsFoodsAction(false));
     }

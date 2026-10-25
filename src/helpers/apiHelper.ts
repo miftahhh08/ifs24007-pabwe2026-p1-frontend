@@ -7,52 +7,23 @@ export interface ApiOptions {
 }
 
 const TOKEN_KEY = "gulasadar:token";
-const TOKEN_COOKIE = "gulasadar_token";
-const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 hari
 
-// Token disimpan di localStorage DAN cookie. Cookie dipertahankan saat browser
-// dibuka ulang / storage direset (mis. oleh alat audit seperti Lighthouse),
-// sehingga sesi login tetap terbaca di halaman terproteksi.
-function readCookie(): string | null {
+// Token hanya disimpan di sessionStorage: terikat ke satu tab, hilang saat tab ditutup,
+// dan tidak ikut terkirim otomatis ke server (berbeda dengan cookie yang bisa dibaca JS).
+// Untuk keamanan penuh, backend sebaiknya menerbitkan cookie HttpOnly.
+export function getAuthToken(): string | null {
+  if (typeof window === "undefined") return null;
   try {
-    const match = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith(`${TOKEN_COOKIE}=`));
-    return match ? decodeURIComponent(match.slice(TOKEN_COOKIE.length + 1)) : null;
+    return sessionStorage.getItem(TOKEN_KEY);
   } catch {
     return null;
   }
 }
 
-function writeCookie(token: string | null): void {
-  try {
-    const secure = window.location.protocol === "https:" ? "; Secure" : "";
-    if (token === null) {
-      document.cookie = `${TOKEN_COOKIE}=; Path=/; Max-Age=0; SameSite=Lax${secure}`;
-    } else {
-      document.cookie = `${TOKEN_COOKIE}=${encodeURIComponent(token)}; Path=/; Max-Age=${COOKIE_MAX_AGE}; SameSite=Lax${secure}`;
-    }
-  } catch {
-    /* cookie tidak tersedia */
-  }
-}
-
-export function getAuthToken(): string | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const fromStorage = localStorage.getItem(TOKEN_KEY);
-    if (fromStorage) return fromStorage;
-  } catch {
-    /* lanjut ke cookie */
-  }
-  return readCookie();
-}
-
 export function setAuthToken(token: string): void {
   if (typeof window === "undefined") return;
-  writeCookie(token);
   try {
-    localStorage.setItem(TOKEN_KEY, token);
+    sessionStorage.setItem(TOKEN_KEY, token);
   } catch {
     /* penyimpanan tidak tersedia */
   }
@@ -60,9 +31,8 @@ export function setAuthToken(token: string): void {
 
 export function removeAuthToken(): void {
   if (typeof window === "undefined") return;
-  writeCookie(null);
   try {
-    localStorage.removeItem(TOKEN_KEY);
+    sessionStorage.removeItem(TOKEN_KEY);
   } catch {
     /* penyimpanan tidak tersedia */
   }

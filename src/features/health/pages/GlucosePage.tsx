@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { IconDroplet, IconTrash } from "@tabler/icons-react";
 import { showConfirmDialog, showErrorDialog, showSuccessDialog } from "@/helpers/toolsHelper";
+import { getErrorMessage } from "@/helpers/errorHelper";
 import type { GlucoseContext, GlucoseLog } from "@/types";
 import { addGlucose, deleteGlucose, getGlucose } from "../api/healthApi";
 import { validateGlucose } from "../validation";
@@ -31,7 +32,7 @@ export default function GlucosePage() {
       const data = await getGlucose();
       setLogs(data);
     } catch (error) {
-      showErrorDialog((error as Error).message);
+      showErrorDialog(getErrorMessage(error));
     } finally {
       setLoaded(true);
     }
@@ -55,7 +56,7 @@ export default function GlucosePage() {
       setSubmitted(false);
       await load();
     } catch (error) {
-      showErrorDialog((error as Error).message);
+      showErrorDialog(getErrorMessage(error));
     } finally {
       setBusy(false);
     }
@@ -67,7 +68,7 @@ export default function GlucosePage() {
       await deleteGlucose(id);
       await load();
     } catch (error) {
-      showErrorDialog((error as Error).message);
+      showErrorDialog(getErrorMessage(error));
     }
   }
 

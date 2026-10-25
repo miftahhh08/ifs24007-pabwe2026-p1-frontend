@@ -9,6 +9,8 @@ describe("store", () => {
       isToday: false,
       authUser: null,
       isAuthLoading: false,
+      glucose: { logs: [], loaded: false },
+      stats: null,
     });
   });
 

@@ -1,6 +1,6 @@
 import { showErrorDialog } from "@/helpers/toolsHelper";
 import { searchFoods } from "../api/foodApi";
-import { FoodActionType, asyncSetFoods, receiveFoodsAction, setIsFoodsAction } from "./action";
+import { FoodActionType, asyncGetFoodsByIds, asyncSetFoods, receiveFoodsAction, setIsFoodsAction } from "./action";
 import type { Food } from "@/types";
 
 vi.mock("../api/foodApi", () => ({ searchFoods: vi.fn() }));
@@ -29,5 +29,17 @@ describe("foods action", () => {
     await asyncSetFoods("a")(dispatch);
     expect(showErrorDialog).toHaveBeenCalledWith("gagal");
     expect(dispatch).toHaveBeenLastCalledWith(setIsFoodsAction(false));
+  });
+
+  it("asyncGetFoodsByIds mengembalikan makanan sesuai urutan id dan mengabaikan yang tak ada", async () => {
+    const b = { id: "b", name: "B" } as Food;
+    vi.mocked(searchFoods).mockResolvedValue([food, b]);
+    expect(await asyncGetFoodsByIds(["b", "x", "a"])()).toEqual([b, food]);
+    expect(searchFoods).toHaveBeenCalledWith("");
+  });
+
+  it("asyncGetFoodsByIds mengembalikan daftar kosong bila gagal", async () => {
+    vi.mocked(searchFoods).mockRejectedValue(new Error("gagal"));
+    expect(await asyncGetFoodsByIds(["a"])()).toEqual([]);
   });
 });

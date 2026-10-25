@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { IconBolt, IconPlus } from "@tabler/icons-react";
 import { useAppDispatch } from "@/hooks/redux";
-import { searchFoods } from "@/features/foods/api/foodApi";
+import { asyncGetFoodsByIds } from "@/features/foods/states/action";
 import { asyncAddLog } from "@/features/logs/states/action";
 import type { Food } from "@/types";
 
@@ -15,10 +15,8 @@ export default function QuickAdd() {
   const [foods, setFoods] = useState<Food[]>([]);
 
   useEffect(() => {
-    searchFoods("")
-      .then((all) => setFoods(POPULAR.map((id) => all.find((f) => f.id === id)).filter((f): f is Food => Boolean(f))))
-      .catch(() => setFoods([]));
-  }, []);
+    void dispatch(asyncGetFoodsByIds(POPULAR)).then(setFoods);
+  }, [dispatch]);
 
   if (foods.length === 0) return null;
   return (

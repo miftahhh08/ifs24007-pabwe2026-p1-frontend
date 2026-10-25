@@ -1,17 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { IconFlame } from "@tabler/icons-react";
-import { reportError } from "@/helpers/errorHelper";
-import { getStats } from "@/features/logs/api/logApi";
-import type { StatsData } from "@/types";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import { asyncSetStats } from "../states/action";
 
 export default function TrendCard() {
-  const [stats, setStats] = useState<StatsData | null>(null);
+  const dispatch = useAppDispatch();
+  const stats = useAppSelector((state) => state.stats);
 
   useEffect(() => {
-    getStats().then(setStats).catch((error: Error) => reportError(error));
-  }, []);
+    void dispatch(asyncSetStats());
+  }, [dispatch]);
 
   if (!stats) return null;
   const max = Math.max(stats.limit_g, ...stats.days.map((d) => d.sugar_g));

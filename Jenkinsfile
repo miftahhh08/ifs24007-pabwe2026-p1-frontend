@@ -7,9 +7,6 @@ pipeline {
         skipDefaultCheckout(true)
         // Stop later stages if a publisher marks the build UNSTABLE/FAILURE mid-run
         skipStagesAfterUnstable()
-        // Satu proyek hanya boleh jalankan satu job.
-        // Jika ada build baru dipicu, build lama otomatis di-abort.
-        disableConcurrentBuilds(abortPrevious: true)
     }
 
     stages {
@@ -182,7 +179,7 @@ pipeline {
         // ============================================================
         stage('Quality Gate') {
             steps {
-                timeout(time: 5, unit: 'MINUTES') {
+                timeout(time: 30, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
                 }
             }

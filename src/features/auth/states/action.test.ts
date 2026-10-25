@@ -1,5 +1,4 @@
 import { showErrorDialog, showSuccessDialog } from "@/helpers/toolsHelper";
-import { getAuthToken, removeAuthToken } from "@/helpers/apiHelper";
 import { getMeApi, loginApi, logoutApi, registerApi } from "../api/authApi";
 import {
   AuthActionType,
@@ -14,11 +13,6 @@ import {
 vi.mock("@/helpers/toolsHelper", () => ({
   showErrorDialog: vi.fn(),
   showSuccessDialog: vi.fn(),
-}));
-
-vi.mock("@/helpers/apiHelper", () => ({
-  getAuthToken: vi.fn(),
-  removeAuthToken: vi.fn(),
 }));
 
 vi.mock("../api/authApi", () => ({
@@ -46,16 +40,7 @@ describe("auth action", () => {
   });
 
   describe("asyncCheckAuth", () => {
-    it("tidak melakukan apa pun jika token tidak ada", async () => {
-      vi.mocked(getAuthToken).mockReturnValue(null);
-      const dispatch = vi.fn();
-      await asyncCheckAuth()(dispatch);
-      expect(dispatch).not.toHaveBeenCalled();
-      expect(getMeApi).not.toHaveBeenCalled();
-    });
-
-    it("memuat profil pengguna jika token valid", async () => {
-      vi.mocked(getAuthToken).mockReturnValue("tok-123");
+    it("memuat profil pengguna dari sesi cookie", async () => {
       const user = { id: 1, name: "Budi", email: "budi@example.com" };
       vi.mocked(getMeApi).mockResolvedValue(user);
 
@@ -67,14 +52,12 @@ describe("auth action", () => {
       expect(dispatch).toHaveBeenCalledWith(setIsAuthLoadingAction(false));
     });
 
-    it("menghapus token dan set user null jika getMeApi gagal", async () => {
-      vi.mocked(getAuthToken).mockReturnValue("tok-expired");
+    it("set user null jika getMeApi gagal (tamu atau sesi berakhir)", async () => {
       vi.mocked(getMeApi).mockRejectedValue(new Error("Sesi berakhir"));
 
       const dispatch = vi.fn();
       await asyncCheckAuth()(dispatch);
 
-      expect(removeAuthToken).toHaveBeenCalled();
       expect(dispatch).toHaveBeenCalledWith(setAuthUserAction(null));
       expect(dispatch).toHaveBeenCalledWith(setIsAuthLoadingAction(false));
     });
@@ -83,7 +66,7 @@ describe("auth action", () => {
   describe("asyncRegister", () => {
     it("sukses mendaftar akun", async () => {
       const user = { id: 1, name: "Budi", email: "budi@example.com" };
-      vi.mocked(registerApi).mockResolvedValue({ user, token: "tok-1" });
+      vi.mocked(registerApi).mockResolvedValue({ user });
 
       const dispatch = vi.fn();
       const onSuccess = vi.fn();
@@ -110,7 +93,7 @@ describe("auth action", () => {
   describe("asyncLogin", () => {
     it("sukses masuk akun", async () => {
       const user = { id: 2, name: "Siti", email: "siti@example.com" };
-      vi.mocked(loginApi).mockResolvedValue({ user, token: "tok-2" });
+      vi.mocked(loginApi).mockResolvedValue({ user });
 
       const dispatch = vi.fn();
       const onSuccess = vi.fn();

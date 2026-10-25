@@ -18,7 +18,7 @@ import { reportError } from "@/helpers/errorHelper";
 import type { IdentifyResult } from "@/types";
 import { useAppDispatch } from "@/hooks/redux";
 import { asyncAddLog } from "@/features/logs/states/action";
-import { identifyPhoto } from "../api/healthApi";
+import { asyncIdentifyPhoto } from "../states/action";
 import { cardClass } from "./PageHero";
 import PhotoFoodItem from "./PhotoFoodItem";
 import PhotoHelpPanel from "./PhotoHelpPanel";
@@ -72,7 +72,8 @@ export default function PhotoIdentify() {
     setBusy(true);
     try {
       const base64 = await readBase64(targetFile);
-      const res = await identifyPhoto(base64, targetFile.type, targetFile.name, activeHint);
+      const res = await dispatch(asyncIdentifyPhoto(base64, targetFile.type, targetFile.name, activeHint));
+      if (!res) return;
       setResult(res);
       setAddedMap({}); // analisis ulang: status "tercatat" harus dimulai dari awal
 

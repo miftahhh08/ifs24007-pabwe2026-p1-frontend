@@ -1,4 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithProviders } from "@/test-utils";
 import { showErrorDialog } from "@/helpers/toolsHelper";
 import { getStats } from "@/features/logs/api/logApi";
 import TrendCard from "./TrendCard";
@@ -12,14 +13,14 @@ describe("TrendCard", () => {
       limit_g: 50, streak: 2,
       days: [{ day: "2026-10-22", sugar_g: 60 }, { day: "2026-10-23", sugar_g: 0 }],
     });
-    render(<TrendCard />);
+    renderWithProviders(<TrendCard />);
     expect(await screen.findByText("2 hari berturut-turut")).toBeInTheDocument();
     expect(screen.getByRole("img", { name: "Grafik gula 7 hari" })).toBeInTheDocument();
   });
 
   it("menampilkan dialog error bila gagal", async () => {
     vi.mocked(getStats).mockRejectedValue(new Error("gagal"));
-    const { container } = render(<TrendCard />);
+    const { container } = renderWithProviders(<TrendCard />);
     await vi.waitFor(() => expect(showErrorDialog).toHaveBeenCalledWith("gagal"));
     expect(container).toBeEmptyDOMElement();
   });

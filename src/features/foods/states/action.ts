@@ -20,6 +20,18 @@ export function setIsFoodsAction(isFoods: boolean): FoodAction {
   return { type: FoodActionType.SET_IS_FOODS, payload: { isFoods } };
 }
 
+/** Mengambil beberapa makanan berdasarkan id (urutan mengikuti `ids`); kosong bila gagal. */
+export function asyncGetFoodsByIds(ids: string[]) {
+  return async (): Promise<Food[]> => {
+    try {
+      const all = await searchFoods("");
+      return ids.map((id) => all.find((f) => f.id === id)).filter((f): f is Food => Boolean(f));
+    } catch {
+      return [];
+    }
+  };
+}
+
 export function asyncSetFoods(q: string) {
   return async (dispatch: ThunkAppDispatch) => {
     dispatch(setIsFoodsAction(true));

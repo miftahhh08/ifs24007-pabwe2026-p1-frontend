@@ -11,10 +11,9 @@ import {
   IconBrain,
 } from "@tabler/icons-react";
 import { showConfirmDialog } from "@/helpers/toolsHelper";
-import { reportError } from "@/helpers/errorHelper";
 import type { ChatStatus } from "@/types";
-import { useAppSelector } from "@/hooks/redux";
-import { getChatStatus, sendChat } from "../api/healthApi";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import { asyncGetChatStatus, asyncSendChat } from "../states/action";
 import PageHero, { cardClass } from "../components/PageHero";
 import SobatGulaAvatar from "../components/SobatGulaAvatar";
 import UserAvatar from "../components/UserAvatar";
@@ -30,6 +29,7 @@ const WELCOME: Msg = {
 };
 
 export default function ChatPage() {
+  const dispatch = useAppDispatch();
   const authUser = useAppSelector((state) => state.authUser);
   const [messages, setMessages] = useState<Msg[]>([WELCOME]);
   const [text, setText] = useState("");
@@ -39,13 +39,12 @@ export default function ChatPage() {
   const endRef = useRef<HTMLLIElement>(null);
 
   useEffect(() => {
-    getChatStatus()
-      .then((s) => {
-        setStatus(s);
-        setChips(s.suggestions);
-      })
-      .catch((error: Error) => reportError(error));
-  }, []);
+    void dispatch(asyncGetChatStatus()).then((s) => {
+      if (!s) return;
+      setStatus(s);
+      setChips(s.suggestions);
+    });
+  }, [dispatch]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView?.({ block: "end", behavior: "smooth" });
@@ -57,15 +56,12 @@ export default function ChatPage() {
     setMessages((m) => [...m, { from: "user", text: message }]);
     setText("");
     setBusy(true);
-    try {
-      const res = await sendChat(message);
+    const res = await dispatch(asyncSendChat(message));
+    if (res) {
       setMessages((m) => [...m, { from: "bot", text: res.reply }]);
       if (res.suggestions?.length) setChips(res.suggestions);
-    } catch (error) {
-      reportError(error);
-    } finally {
-      setBusy(false);
     }
+    setBusy(false);
   }
 
   async function clear() {

@@ -3,9 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { IconTag, IconRefresh } from "@tabler/icons-react";
-import { reportError } from "@/helpers/errorHelper";
 import type { LabelResult } from "@/types";
-import { calcLabel } from "../api/healthApi";
+import { useAppDispatch } from "@/hooks/redux";
+import { asyncCalcLabel } from "../states/action";
 import { validateLabel } from "../validation";
 import PageHero, { Field, btnClass, cardClass } from "../components/PageHero";
 
@@ -16,6 +16,7 @@ const LIGHT = {
 } as const;
 
 export default function LabelPage() {
+  const dispatch = useAppDispatch();
   const [sugar, setSugar] = useState("");
   const [pack, setPack] = useState("1");
   const [eaten, setEaten] = useState("1");
@@ -33,13 +34,9 @@ export default function LabelPage() {
     setSubmitted(true);
     if (Object.keys(validateLabel(sugar, pack, eaten)).length) return;
     setBusy(true);
-    try {
-      setResult(await calcLabel(Number(sugar), Number(pack), Number(eaten)));
-    } catch (error) {
-      reportError(error);
-    } finally {
-      setBusy(false);
-    }
+    const res = await dispatch(asyncCalcLabel(Number(sugar), Number(pack), Number(eaten)));
+    if (res) setResult(res);
+    setBusy(false);
   }
 
   return (

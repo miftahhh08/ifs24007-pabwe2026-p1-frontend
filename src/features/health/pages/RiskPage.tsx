@@ -3,9 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { IconHeartbeat, IconRefresh } from "@tabler/icons-react";
-import { reportError } from "@/helpers/errorHelper";
 import type { RiskInput, RiskResult } from "@/types";
-import { assessRisk } from "../api/healthApi";
+import { useAppDispatch } from "@/hooks/redux";
+import { asyncAssessRisk } from "../states/action";
 import { validateRisk } from "../validation";
 import PageHero, { Field, btnClass, cardClass } from "../components/PageHero";
 
@@ -27,6 +27,7 @@ const EMPTY = { age: "", sex: "pria", heightCm: "", weightKg: "", waistCm: "", f
 const NO_CHECKS = { active: false, dailyVegetables: false, bpMedication: false, highGlucoseHistory: false };
 
 export default function RiskPage() {
+  const dispatch = useAppDispatch();
   const [f, setF] = useState(EMPTY);
   const [checks, setChecks] = useState(NO_CHECKS);
   const [submitted, setSubmitted] = useState(false);
@@ -48,13 +49,9 @@ export default function RiskPage() {
       age: Number(f.age), heightCm: Number(f.heightCm), weightKg: Number(f.weightKg), waistCm: Number(f.waistCm),
     } as RiskInput;
     setBusy(true);
-    try {
-      setResult(await assessRisk(input));
-    } catch (error) {
-      reportError(error);
-    } finally {
-      setBusy(false);
-    }
+    const res = await dispatch(asyncAssessRisk(input));
+    if (res) setResult(res);
+    setBusy(false);
   }
 
   return (

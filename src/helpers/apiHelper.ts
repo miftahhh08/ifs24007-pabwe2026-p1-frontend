@@ -1,4 +1,4 @@
-import { BASE_URL } from "@/lib/config";
+import { CLIENT_HEADER, CLIENT_HEADER_VALUE } from "@/lib/proxyGuard";
 
 export interface ApiOptions {
   method?: "GET" | "POST" | "PUT" | "DELETE";
@@ -6,40 +6,11 @@ export interface ApiOptions {
   body?: unknown;
 }
 
-const TOKEN_KEY = "gulasadar:token";
-
-// Token hanya disimpan di sessionStorage: terikat ke satu tab, hilang saat tab ditutup,
-// dan tidak ikut terkirim otomatis ke server (berbeda dengan cookie yang bisa dibaca JS).
-// Untuk keamanan penuh, backend sebaiknya menerbitkan cookie HttpOnly.
-export function getAuthToken(): string | null {
-  if (typeof window === "undefined") return null;
-  try {
-    return sessionStorage.getItem(TOKEN_KEY);
-  } catch {
-    return null;
-  }
-}
-
-export function setAuthToken(token: string): void {
-  if (typeof window === "undefined") return;
-  try {
-    sessionStorage.setItem(TOKEN_KEY, token);
-  } catch {
-    /* penyimpanan tidak tersedia */
-  }
-}
-
-export function removeAuthToken(): void {
-  if (typeof window === "undefined") return;
-  try {
-    sessionStorage.removeItem(TOKEN_KEY);
-  } catch {
-    /* penyimpanan tidak tersedia */
-  }
-}
+/** Semua request lewat proxy Next.js yang menyimpan token di cookie HttpOnly. */
+export const API_PROXY_PREFIX = "/api/proxy";
 
 /**
- * Wrapper fetch ke REST API GulaSadar (Express).
+ * Wrapper fetch ke REST API GulaSadar (Express) melalui proxy sisi server.
  * Server mengembalikan { data } saat sukses dan { error } saat gagal.
  */
 export async function apiRequest<T>(path: string, options: ApiOptions = {}): Promise<T> {
@@ -50,21 +21,16 @@ export async function apiRequest<T>(path: string, options: ApiOptions = {}): Pro
     if (value !== undefined) params.set(key, String(value));
   });
   const qs = params.toString();
-  const url = `${BASE_URL}${path}${qs ? `?${qs}` : ""}`;
-
-  const headers: Record<string, string> = { "Content-Type": "application/json" };
-  const token = getAuthToken();
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
+  const url = `${API_PROXY_PREFIX}${path}${qs ? `?${qs}` : ""}`;
 
   let res: Response;
   try {
     res = await fetch(url, {
       method,
-      headers,
+      headers: { "Content-Type": "application/json", [CLIENT_HEADER]: CLIENT_HEADER_VALUE },
       body: body === undefined ? undefined : JSON.stringify(body),
       cache: "no-store",
+      credentials: "same-origin",
     });
   } catch {
     throw new Error("Tidak dapat terhubung ke server. Periksa koneksi internetmu dan pastikan backend berjalan (jalankan `bun run dev` di folder backend), lalu coba lagi.");

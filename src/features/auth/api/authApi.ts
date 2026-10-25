@@ -1,40 +1,19 @@
-import { apiRequest, removeAuthToken, setAuthToken } from "@/helpers/apiHelper";
+import { apiRequest } from "@/helpers/apiHelper";
 import type { AuthResponse, LoginInput, RegisterInput, User } from "@/types";
 
-export async function registerApi(input: RegisterInput): Promise<AuthResponse> {
-  const res = await apiRequest<AuthResponse>("/api/auth/register", {
-    method: "POST",
-    body: input,
-  });
-  if (res.token) {
-    setAuthToken(res.token);
-  }
-  return res;
-}
+// Token tidak pernah sampai ke JavaScript: proxy menyimpannya sebagai cookie HttpOnly
+// saat login/daftar dan menghapusnya saat logout.
 
-export async function loginApi(input: LoginInput): Promise<AuthResponse> {
-  const res = await apiRequest<AuthResponse>("/api/auth/login", {
-    method: "POST",
-    body: input,
-  });
-  if (res.token) {
-    setAuthToken(res.token);
-  }
-  return res;
-}
+export const registerApi = (input: RegisterInput) =>
+  apiRequest<AuthResponse>("/api/auth/register", { method: "POST", body: input });
+
+export const loginApi = (input: LoginInput) =>
+  apiRequest<AuthResponse>("/api/auth/login", { method: "POST", body: input });
 
 export async function getMeApi(): Promise<User> {
   const res = await apiRequest<{ user: User }>("/api/auth/me");
   return res.user;
 }
 
-export async function logoutApi(): Promise<{ message: string }> {
-  try {
-    const res = await apiRequest<{ message: string }>("/api/auth/logout", {
-      method: "POST",
-    });
-    return res;
-  } finally {
-    removeAuthToken();
-  }
-}
+export const logoutApi = () =>
+  apiRequest<{ message: string }>("/api/auth/logout", { method: "POST" });

@@ -1,11 +1,6 @@
-import type { Metadata } from "next";
-import LoginPage from "@/features/auth/pages/LoginPage";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Masuk / Daftar - GulaSadar",
-  description: "Masuk ke akun GulaSadar untuk memantau asupan gula harianmu secara aman.",
-};
-
+/** Alamat lama `/login` dialihkan ke satu-satunya halaman masuk: `/auth/login`. */
 export default function Page() {
-  return <LoginPage />;
+  redirect("/auth/login");
 }

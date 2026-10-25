@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { renderWithProviders } from "@/test-utils";
 import LoginPage from "./LoginPage";
 import * as authActions from "../states/action";
-import * as apiHelper from "@/helpers/apiHelper";
 
 vi.mock("next/navigation", () => ({ useRouter: vi.fn() }));
 
@@ -17,14 +16,17 @@ describe("LoginPage", () => {
     localStorage.clear();
   });
 
-  it("mengarahkan ke beranda jika sudah ada token atau authUser", () => {
-    vi.spyOn(apiHelper, "getAuthToken").mockReturnValue("active-token");
-    renderWithProviders(<LoginPage />);
+  it("mengarahkan ke beranda jika sudah ada authUser", () => {
+    renderWithProviders(<LoginPage />, { authUser: { id: 1, name: "Budi", email: "budi@example.com" } });
     expect(push).toHaveBeenCalledWith("/");
   });
 
+  it("tidak mengarahkan ke beranda untuk pengunjung yang belum masuk", () => {
+    renderWithProviders(<LoginPage />);
+    expect(push).not.toHaveBeenCalled();
+  });
+
   it("menampilkan tampilan LOGIN secara default dengan ilustrasi dan tombol pil", () => {
-    vi.spyOn(apiHelper, "getAuthToken").mockReturnValue(null);
     renderWithProviders(<LoginPage />);
 
     expect(screen.getByRole("heading", { name: "GulaSadar" })).toBeInTheDocument();
@@ -35,7 +37,6 @@ describe("LoginPage", () => {
   });
 
   it("dapat beralih ke formulir DAFTAR dan kembali ke LOGIN", async () => {
-    vi.spyOn(apiHelper, "getAuthToken").mockReturnValue(null);
     renderWithProviders(<LoginPage />);
 
     await userEvent.click(screen.getByRole("button", { name: "Daftar" }));
@@ -48,7 +49,6 @@ describe("LoginPage", () => {
   });
 
   it("menampilkan pesan kesalahan validasi pada format email dan kata sandi", async () => {
-    vi.spyOn(apiHelper, "getAuthToken").mockReturnValue(null);
     renderWithProviders(<LoginPage />);
 
     await userEvent.type(screen.getByLabelText("Email"), "bukan-email");
@@ -67,7 +67,6 @@ describe("LoginPage", () => {
   });
 
   it("validasi nama lengkap pada mode pendaftaran", async () => {
-    vi.spyOn(apiHelper, "getAuthToken").mockReturnValue(null);
     renderWithProviders(<LoginPage />);
 
     await userEvent.click(screen.getByRole("button", { name: "Daftar" }));
@@ -80,7 +79,6 @@ describe("LoginPage", () => {
   });
 
   it("mengirim data masuk yang valid dan mengarahkan ke beranda", async () => {
-    vi.spyOn(apiHelper, "getAuthToken").mockReturnValue(null);
     const spy = vi.spyOn(authActions, "asyncLogin").mockImplementation((_, onSuccess) => {
       onSuccess?.();
       return () => Promise.resolve();
@@ -97,7 +95,6 @@ describe("LoginPage", () => {
   });
 
   it("mengirim data pendaftaran yang valid dan mengarahkan ke beranda", async () => {
-    vi.spyOn(apiHelper, "getAuthToken").mockReturnValue(null);
     const spy = vi.spyOn(authActions, "asyncRegister").mockImplementation((_, onSuccess) => {
       onSuccess?.();
       return () => Promise.resolve();
@@ -116,7 +113,6 @@ describe("LoginPage", () => {
   });
 
   it("opsi lanjutkan sebagai tamu menyimpan flag guest dan mengarahkan ke beranda", async () => {
-    vi.spyOn(apiHelper, "getAuthToken").mockReturnValue(null);
     renderWithProviders(<LoginPage />);
 
     const guestBtn = screen.getByRole("button", { name: /Lanjutkan sebagai Tamu/i });
@@ -127,7 +123,6 @@ describe("LoginPage", () => {
   });
 
   it("menampilkan teks memproses saat isLoading bernilai true", () => {
-    vi.spyOn(apiHelper, "getAuthToken").mockReturnValue(null);
     renderWithProviders(<LoginPage />, { isAuthLoading: true });
     expect(screen.getByText("MEMPROSES...")).toBeInTheDocument();
   });

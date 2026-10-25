@@ -11,11 +11,18 @@ import {
   IconUserCheck,
 } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
-import { getAuthToken } from "@/helpers/apiHelper";
 import { disableGuestMode, enableGuestMode } from "@/helpers/guestMode";
 import { asyncLogin, asyncRegister } from "../states/action";
 import { validateAuthForm } from "../validation";
 import LoginIllustration from "../components/LoginIllustration";
+import AuthTextField from "../components/AuthTextField";
+
+type AuthMode = "login" | "register";
+
+const MODE_TABS: { value: AuthMode; label: string }[] = [
+  { value: "login", label: "Masuk" },
+  { value: "register", label: "Daftar" },
+];
 
 export default function LoginPage() {
   const router = useRouter();
@@ -23,17 +30,22 @@ export default function LoginPage() {
   const authUser = useAppSelector((state) => state.authUser);
   const isLoading = useAppSelector((state) => state.isAuthLoading);
 
-  const [mode, setMode] = useState<"login" | "register">("login");
+  const [mode, setMode] = useState<AuthMode>("login");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (authUser || getAuthToken()) {
+    if (authUser) {
       router.push("/");
     }
   }, [authUser, router]);
+
+  function switchMode(next: AuthMode) {
+    setMode(next);
+    setFormError(null);
+  }
 
   function onAuthSuccess() {
     disableGuestMode();
@@ -140,34 +152,20 @@ export default function LoginPage() {
 
             {/* Tab Switcher Masuk / Daftar */}
             <div className="mt-6 flex rounded-full bg-[#124230] p-1 text-xs font-bold text-white shadow-inner">
-              <button
-                type="button"
-                onClick={() => {
-                  setMode("login");
-                  setFormError(null);
-                }}
-                className={`flex-1 rounded-full py-2.5 transition ${
-                  mode === "login"
-                    ? "bg-[#276a52] text-white shadow-md"
-                    : "text-emerald-100 hover:text-white"
-                }`}
-              >
-                Masuk
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setMode("register");
-                  setFormError(null);
-                }}
-                className={`flex-1 rounded-full py-2.5 transition ${
-                  mode === "register"
-                    ? "bg-[#276a52] text-white shadow-md"
-                    : "text-emerald-100 hover:text-white"
-                }`}
-              >
-                Daftar
-              </button>
+              {MODE_TABS.map(({ value, label }) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => switchMode(value)}
+                  className={`flex-1 rounded-full py-2.5 transition ${
+                    mode === value
+                      ? "bg-[#276a52] text-white shadow-md"
+                      : "text-emerald-100 hover:text-white"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
             </div>
 
             {/* Alert Error Validasi */}
@@ -180,77 +178,39 @@ export default function LoginPage() {
             {/* Formulir Input Pil Sesuai Desain Gambar */}
             <form onSubmit={handleSubmit} noValidate className="mt-6 space-y-4">
               {mode === "register" && (
-                <div>
-                  <label htmlFor="login-name" className="block text-xs font-semibold text-emerald-100 mb-1 pl-3">
-                    Nama Lengkap
-                  </label>
-                  <div className="relative">
-                    <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-emerald-200">
-                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#124230]">
-                        <IconUser size={16} />
-                      </span>
-                    </span>
-                    <input
-                      id="login-name"
-                      type="text"
-                      required
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="Nama lengkapmu"
-                      className="w-full rounded-full border border-emerald-600/30 bg-[#164634] py-3.5 pl-14 pr-5 text-sm text-white placeholder-emerald-200/70 outline-none transition focus:border-emerald-400 focus:bg-[#1a513c] focus:ring-4 focus:ring-emerald-500/20"
-                    />
-                  </div>
-                </div>
+                <AuthTextField
+                  id="login-name"
+                  label="Nama Lengkap"
+                  icon={IconUser}
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Nama lengkapmu"
+                />
               )}
-
-              <div>
-                <label htmlFor="username" className="block text-xs font-semibold text-emerald-100 mb-1 pl-3">
-                  Email
-                </label>
-                <div className="relative">
-                  <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-emerald-200">
-                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#124230]">
-                      <IconMail size={16} />
-                    </span>
-                  </span>
-                  <input
-                    id="username"
-                    name="username"
-                    autoComplete="username"
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="nama@email.com"
-                    className="w-full rounded-full border border-emerald-600/30 bg-[#164634] py-3.5 pl-14 pr-5 text-sm text-white placeholder-emerald-200/70 outline-none transition focus:border-emerald-400 focus:bg-[#1a513c] focus:ring-4 focus:ring-emerald-500/20"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="password" className="block text-xs font-semibold text-emerald-100 mb-1 pl-3">
-                  Password
-                </label>
-                <div className="relative">
-                  <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-emerald-200">
-                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#124230]">
-                      <IconLock size={16} />
-                    </span>
-                  </span>
-                  <input
-                    id="password"
-                    name="password"
-                    autoComplete="current-password"
-                    type="password"
-                    required
-                    minLength={6}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Minimal 6 karakter"
-                    className="w-full rounded-full border border-emerald-600/30 bg-[#164634] py-3.5 pl-14 pr-5 text-sm text-white placeholder-emerald-200/70 outline-none transition focus:border-emerald-400 focus:bg-[#1a513c] focus:ring-4 focus:ring-emerald-500/20"
-                  />
-                </div>
-              </div>
+              <AuthTextField
+                id="username"
+                name="username"
+                label="Email"
+                icon={IconMail}
+                type="email"
+                autoComplete="username"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="nama@email.com"
+              />
+              <AuthTextField
+                id="password"
+                name="password"
+                label="Password"
+                icon={IconLock}
+                type="password"
+                autoComplete="current-password"
+                minLength={6}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Minimal 6 karakter"
+              />
 
               {/* Tombol Aksi Pil */}
               <button

@@ -1,5 +1,6 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { renderWithProviders } from "@/test-utils";
 import { showErrorDialog } from "@/helpers/toolsHelper";
 import { assessRisk } from "../api/healthApi";
 import RiskPage from "./RiskPage";
@@ -24,7 +25,7 @@ describe("RiskPage", () => {
 
   it("mengirim data dan menampilkan hasil", async () => {
     vi.mocked(assessRisk).mockResolvedValue(result("tinggi"));
-    render(<RiskPage />);
+    renderWithProviders(<RiskPage />);
     await fill();
     await userEvent.click(screen.getByRole("button", { name: "Lihat hasil" }));
     expect(assessRisk).toHaveBeenCalledWith(expect.objectContaining({ age: 50, sex: "wanita", familyHistory: "orangtua", active: true, heightCm: 160 }));
@@ -34,14 +35,14 @@ describe("RiskPage", () => {
 
   it("level tak dikenal memakai gaya bawaan", async () => {
     vi.mocked(assessRisk).mockResolvedValue(result("aneh"));
-    render(<RiskPage />);
+    renderWithProviders(<RiskPage />);
     await fill();
     await userEvent.click(screen.getByRole("button", { name: "Lihat hasil" }));
     expect(await screen.findByText("Risiko aneh")).toBeInTheDocument();
   });
 
   it("validasi inline mencegah pengiriman form kosong", async () => {
-    render(<RiskPage />);
+    renderWithProviders(<RiskPage />);
     await userEvent.click(screen.getByRole("button", { name: "Lihat hasil" }));
     expect(screen.getAllByRole("alert").length).toBe(4);
     expect(assessRisk).not.toHaveBeenCalled();
@@ -51,7 +52,7 @@ describe("RiskPage", () => {
 
   it("Kosongkan mereset form dan hasil", async () => {
     vi.mocked(assessRisk).mockResolvedValue(result("rendah"));
-    render(<RiskPage />);
+    renderWithProviders(<RiskPage />);
     await fill();
     await userEvent.click(screen.getByRole("button", { name: "Lihat hasil" }));
     await screen.findByText("Risiko rendah");
@@ -62,7 +63,7 @@ describe("RiskPage", () => {
 
   it("menampilkan error dari server", async () => {
     vi.mocked(assessRisk).mockRejectedValue(new Error("gagal server"));
-    render(<RiskPage />);
+    renderWithProviders(<RiskPage />);
     await fill();
     await userEvent.click(screen.getByRole("button", { name: "Lihat hasil" }));
     await vi.waitFor(() => expect(showErrorDialog).toHaveBeenCalledWith("gagal server"));

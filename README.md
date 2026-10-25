@@ -21,7 +21,7 @@ Buka `http://localhost:3000`.
 ## Konfigurasi
 | Variabel | Fungsi |
 |---|---|
-| `NEXT_PUBLIC_GULASADAR_BASEURL` | Alamat API backend (default `http://127.0.0.1:4000`). Dibaca saat **build**, jadi ubah lalu build ulang untuk deployment. |
+| `GULASADAR_API_URL` | Alamat API backend (default `http://127.0.0.1:4000`). Dipanggil dari server Next.js lewat proxy `/api/proxy`, bukan dari browser. `NEXT_PUBLIC_GULASADAR_BASEURL` tetap didukung sebagai cadangan. |
 | `APP_PORT` | Port aplikasi (default 3000) |
 
 ## Halaman
@@ -31,7 +31,7 @@ Buka `http://localhost:3000`.
 ```bash
 PUBLIC_API_URL=https://URL-BACKEND docker compose up -d --build
 ```
-Pastikan backend mengizinkan origin frontend lewat `CORS_ORIGIN`.
+Token login disimpan sebagai cookie HttpOnly oleh proxy `/api/proxy`, sehingga browser tidak memanggil backend langsung (CORS tidak diperlukan). Pastikan alamat backend dapat dijangkau dari container frontend.
 
 ## CI
 `Jenkinsfile` menjalankan: install Bun, install dependency, test (coverage minimal 90%), build, lalu (cabang `main`) deploy.

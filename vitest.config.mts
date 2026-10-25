@@ -25,6 +25,7 @@ export default defineConfig({
         "src/app/**",
         "src/components/Providers.tsx",
         "src/setupTests.ts",
+        "src/test-utils.tsx",
         "src/lib/config.ts",
         "src/types/**",
         "src/hooks/redux.ts",

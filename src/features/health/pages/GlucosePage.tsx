@@ -1,11 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { IconDroplet, IconTrash } from "@tabler/icons-react";
-import { showConfirmDialog, showSuccessDialog } from "@/helpers/toolsHelper";
-import { reportError } from "@/helpers/errorHelper";
-import type { GlucoseContext, GlucoseLog } from "@/types";
-import { addGlucose, deleteGlucose, getGlucose } from "../api/healthApi";
+import type { GlucoseContext } from "@/types";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import { asyncAddGlucose, asyncDeleteGlucose, asyncSetGlucose } from "../states/action";
 import { validateGlucose } from "../validation";
 import PageHero, { Field, btnClass, cardClass } from "../components/PageHero";
 
@@ -18,58 +17,35 @@ const BADGE: Record<string, string> = {
 const CONTEXT_LABEL: Record<string, string> = { puasa: "Puasa", sesudah_makan: "Sesudah makan", sewaktu: "Sewaktu" };
 
 export default function GlucosePage() {
+  const dispatch = useAppDispatch();
+  const { logs, loaded } = useAppSelector((state) => state.glucose);
   const [value, setValue] = useState("");
   const [context, setContext] = useState<GlucoseContext>("puasa");
-  const [logs, setLogs] = useState<GlucoseLog[]>([]);
-  const [loaded, setLoaded] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState<{ category: string; text: string } | null>(null);
   const errors = submitted ? validateGlucose(value) : {};
 
-  const load = useCallback(async () => {
-    try {
-      const data = await getGlucose();
-      setLogs(data);
-    } catch (error) {
-      reportError(error);
-    } finally {
-      setLoaded(true);
-    }
-  }, []);
-
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    void load();
-  }, [load]);
+    void dispatch(asyncSetGlucose());
+  }, [dispatch]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitted(true);
     if (Object.keys(validateGlucose(value)).length) return;
     setBusy(true);
-    try {
-      const added = await addGlucose(Number(value), context);
+    const added = await dispatch(asyncAddGlucose(Number(value), context));
+    if (added) {
       setNote({ category: added.category, text: added.note });
-      showSuccessDialog("Catatan tersimpan");
       setValue("");
       setSubmitted(false);
-      await load();
-    } catch (error) {
-      reportError(error);
-    } finally {
-      setBusy(false);
     }
+    setBusy(false);
   }
 
-  async function onDelete(id: number) {
-    if (!(await showConfirmDialog("Hapus catatan?", "Catatan gula darah ini akan dihapus."))) return;
-    try {
-      await deleteGlucose(id);
-      await load();
-    } catch (error) {
-      reportError(error);
-    }
+  function onDelete(id: number) {
+    return dispatch(asyncDeleteGlucose(id));
   }
 
   return (

@@ -1,4 +1,4 @@
-import { apiRequest, getAuthToken, setAuthToken, removeAuthToken } from "./apiHelper";
+import { apiRequest } from "./apiHelper";
 
 const okResponse = (data: unknown) => ({ ok: true, json: async () => ({ data }) }) as Response;
 
@@ -9,7 +9,7 @@ describe("apiRequest", () => {
     const spy = vi.spyOn(globalThis, "fetch").mockResolvedValue(okResponse([1]));
     const data = await apiRequest("/api/foods", { query: { q: "teh", x: undefined } });
     expect(data).toEqual([1]);
-    expect(spy.mock.calls[0][0]).toContain("/api/foods?q=teh");
+    expect(spy.mock.calls[0][0]).toBe("/api/proxy/api/foods?q=teh");
     expect(String(spy.mock.calls[0][0])).not.toContain("x=");
   });
 
@@ -49,56 +49,22 @@ describe("apiRequest", () => {
     await expect(apiRequest("/x")).rejects.toThrow("Tidak dapat terhubung ke server");
   });
 
-  it("menyimpan, membaca, dan menghapus auth token", () => {
-    sessionStorage.clear();
-    expect(getAuthToken()).toBeNull();
-    setAuthToken("my-token-123");
-    expect(getAuthToken()).toBe("my-token-123");
-    removeAuthToken();
-    expect(getAuthToken()).toBeNull();
-
-    vi.spyOn(Storage.prototype, "getItem").mockImplementationOnce(() => {
-      throw new Error("storage error");
-    });
-    expect(getAuthToken()).toBeNull();
-
-    vi.spyOn(Storage.prototype, "setItem").mockImplementationOnce(() => {
-      throw new Error("storage error");
-    });
-    expect(() => setAuthToken("x")).not.toThrow();
-
-    vi.spyOn(Storage.prototype, "removeItem").mockImplementationOnce(() => {
-      throw new Error("storage error");
-    });
-    expect(() => removeAuthToken()).not.toThrow();
-
-    const origWindow = globalThis.window;
-    // @ts-expect-error simulate SSR
-    delete globalThis.window;
-    expect(getAuthToken()).toBeNull();
-    expect(() => setAuthToken("x")).not.toThrow();
-    expect(() => removeAuthToken()).not.toThrow();
-    globalThis.window = origWindow;
-  });
-
-  it("menyertakan header Authorization saat auth token ada", async () => {
-    setAuthToken("secret-token");
+  it("mengirim request ke proxy sisi server dengan header penanda klien", async () => {
     const spy = vi.spyOn(globalThis, "fetch").mockResolvedValue(okResponse({}));
     await apiRequest("/api/auth/me");
+    expect(spy.mock.calls[0][0]).toBe("/api/proxy/api/auth/me");
     expect(spy.mock.calls[0][1]?.headers).toEqual({
       "Content-Type": "application/json",
-      Authorization: "Bearer secret-token",
+      "x-requested-with": "GulaSadar",
     });
-    removeAuthToken();
+    expect(spy.mock.calls[0][1]?.credentials).toBe("same-origin");
   });
 
-  it("tidak menyimpan token di localStorage maupun cookie", () => {
-    localStorage.clear();
-    setAuthToken("aman-token");
+  it("tidak pernah membawa token di sisi browser", async () => {
+    const spy = vi.spyOn(globalThis, "fetch").mockResolvedValue(okResponse({}));
+    await apiRequest("/api/auth/me");
+    expect(JSON.stringify(spy.mock.calls[0][1]?.headers)).not.toMatch(/authorization/i);
+    expect(sessionStorage.length).toBe(0);
     expect(localStorage.length).toBe(0);
-    expect(document.cookie).not.toContain("aman-token");
-    expect(getAuthToken()).toBe("aman-token");
-    removeAuthToken();
-    expect(getAuthToken()).toBeNull();
   });
 });

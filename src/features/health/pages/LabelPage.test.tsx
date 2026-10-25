@@ -1,5 +1,6 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { renderWithProviders } from "@/test-utils";
 import { showErrorDialog } from "@/helpers/toolsHelper";
 import { calcLabel } from "../api/healthApi";
 import LabelPage from "./LabelPage";
@@ -20,7 +21,7 @@ describe("LabelPage", () => {
 
   it("menghitung dan menampilkan hasil dengan kategori", async () => {
     vi.mocked(calcLabel).mockResolvedValue(res("merah", 120));
-    render(<LabelPage />);
+    renderWithProviders(<LabelPage />);
     await userEvent.clear(screen.getByLabelText("Sajian per kemasan"));
     await userEvent.type(screen.getByLabelText("Sajian per kemasan"), "3");
     await userEvent.clear(screen.getByLabelText("Sajian dikonsumsi"));
@@ -33,13 +34,13 @@ describe("LabelPage", () => {
 
   it.each([["hijau", 10, "Rendah"], ["kuning", 70, "Sedang"]] as const)("kategori %s", async (light, pct, label) => {
     vi.mocked(calcLabel).mockResolvedValue(res(light, pct));
-    render(<LabelPage />);
+    renderWithProviders(<LabelPage />);
     await submit();
     expect(await screen.findByText(`Kategori gula: ${label}`)).toBeInTheDocument();
   });
 
   it("validasi inline: tidak memanggil API dan hilang saat diperbaiki", async () => {
-    render(<LabelPage />);
+    renderWithProviders(<LabelPage />);
     await userEvent.click(screen.getByRole("button", { name: "Hitung" }));
     expect(screen.getByText("Gula per sajian wajib diisi dengan angka.")).toBeInTheDocument();
     expect(calcLabel).not.toHaveBeenCalled();
@@ -50,7 +51,7 @@ describe("LabelPage", () => {
 
   it("tombol Kosongkan mengembalikan form", async () => {
     vi.mocked(calcLabel).mockResolvedValue(res("hijau", 5));
-    render(<LabelPage />);
+    renderWithProviders(<LabelPage />);
     await submit("5");
     await screen.findByText("20 g gula");
     await userEvent.click(screen.getByRole("button", { name: /Kosongkan/ }));
@@ -60,7 +61,7 @@ describe("LabelPage", () => {
 
   it("menampilkan error dari server", async () => {
     vi.mocked(calcLabel).mockRejectedValue(new Error("Data label tidak valid"));
-    render(<LabelPage />);
+    renderWithProviders(<LabelPage />);
     await submit("1");
     await vi.waitFor(() => expect(showErrorDialog).toHaveBeenCalledWith("Data label tidak valid"));
   });

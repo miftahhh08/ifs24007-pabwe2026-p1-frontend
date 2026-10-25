@@ -1,5 +1,6 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { renderWithProviders } from "@/test-utils";
 import { showConfirmDialog, showErrorDialog } from "@/helpers/toolsHelper";
 import { addGlucose, deleteGlucose, getGlucose } from "../api/healthApi";
 import GlucosePage from "./GlucosePage";
@@ -14,7 +15,7 @@ describe("GlucosePage", () => {
 
   it("menampilkan kosong, lalu mencatat nilai", async () => {
     vi.mocked(addGlucose).mockResolvedValue({ id: 1, value: 110, context: "sewaktu", category: "normal", note: "Dalam rentang normal." });
-    render(<GlucosePage />);
+    renderWithProviders(<GlucosePage />);
     expect(await screen.findByText(/Belum ada catatan/)).toBeInTheDocument();
     vi.mocked(getGlucose).mockResolvedValue([log]);
     await userEvent.type(screen.getByLabelText("Nilai gula darah"), "110");
@@ -28,7 +29,7 @@ describe("GlucosePage", () => {
   it("gagal mencatat dan gagal memuat", async () => {
     vi.mocked(getGlucose).mockRejectedValue(new Error("muat gagal"));
     vi.mocked(addGlucose).mockRejectedValue(new Error("simpan gagal"));
-    render(<GlucosePage />);
+    renderWithProviders(<GlucosePage />);
     await vi.waitFor(() => expect(showErrorDialog).toHaveBeenCalledWith("muat gagal"));
     await userEvent.type(screen.getByLabelText("Nilai gula darah"), "95");
     await userEvent.click(screen.getByRole("button", { name: "Simpan" }));
@@ -37,7 +38,7 @@ describe("GlucosePage", () => {
 
   it("gagal memuat ulang setelah mencatat sukses", async () => {
     vi.mocked(getGlucose).mockResolvedValueOnce([]);
-    render(<GlucosePage />);
+    renderWithProviders(<GlucosePage />);
     expect(await screen.findByText(/Belum ada catatan/)).toBeInTheDocument();
 
     vi.mocked(addGlucose).mockResolvedValueOnce({ id: 1, value: 95, context: "sewaktu", category: "normal", note: "Ok" });
@@ -51,7 +52,7 @@ describe("GlucosePage", () => {
   it("menghapus catatan setelah konfirmasi, dan membatalkan", async () => {
     vi.mocked(getGlucose).mockResolvedValue([log]);
     vi.mocked(deleteGlucose).mockResolvedValue({ deleted: true });
-    render(<GlucosePage />);
+    renderWithProviders(<GlucosePage />);
     const btn = await screen.findByLabelText("Hapus catatan 1");
     vi.mocked(showConfirmDialog).mockResolvedValueOnce(false);
     await userEvent.click(btn);
@@ -65,13 +66,13 @@ describe("GlucosePage", () => {
     vi.mocked(getGlucose).mockResolvedValue([log]);
     vi.mocked(deleteGlucose).mockRejectedValue(new Error("hapus gagal"));
     vi.mocked(showConfirmDialog).mockResolvedValue(true);
-    render(<GlucosePage />);
+    renderWithProviders(<GlucosePage />);
     await userEvent.click(await screen.findByLabelText("Hapus catatan 1"));
     await vi.waitFor(() => expect(showErrorDialog).toHaveBeenCalledWith("hapus gagal"));
   });
 
   it("validasi inline: nilai kosong atau di luar rentang tidak dikirim", async () => {
-    render(<GlucosePage />);
+    renderWithProviders(<GlucosePage />);
     await userEvent.click(screen.getByRole("button", { name: "Simpan" }));
     expect(screen.getByText("Nilai gula darah wajib diisi dengan angka.")).toBeInTheDocument();
     await userEvent.type(screen.getByLabelText("Nilai gula darah"), "5");
@@ -81,7 +82,7 @@ describe("GlucosePage", () => {
 
   it("menampilkan lencana kategori dan label konteks tak dikenal", async () => {
     vi.mocked(getGlucose).mockResolvedValue([{ ...log, id: 2, category: "aneh", context: "lain" as never }]);
-    render(<GlucosePage />);
+    renderWithProviders(<GlucosePage />);
     expect(await screen.findByText("aneh")).toBeInTheDocument();
     expect(screen.getByText(/lain/)).toBeInTheDocument();
 

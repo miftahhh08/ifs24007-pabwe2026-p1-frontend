@@ -11,12 +11,11 @@ import {
   IconUserCheck,
 } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
-import { hasAuthSession } from "@/helpers/apiHelper";
+import { getAuthToken } from "@/helpers/apiHelper";
 import { disableGuestMode, enableGuestMode } from "@/helpers/guestMode";
 import { asyncLogin, asyncRegister } from "../states/action";
 import { validateAuthForm } from "../validation";
 import LoginIllustration from "../components/LoginIllustration";
-import AuthTextField from "../components/AuthTextField";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -31,7 +30,7 @@ export default function LoginPage() {
   const [formError, setFormError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (authUser || hasAuthSession()) {
+    if (authUser || getAuthToken()) {
       router.push("/");
     }
   }, [authUser, router]);
@@ -181,41 +180,77 @@ export default function LoginPage() {
             {/* Formulir Input Pil Sesuai Desain Gambar */}
             <form onSubmit={handleSubmit} noValidate className="mt-6 space-y-4">
               {mode === "register" && (
-                <AuthTextField
-                  id="login-name"
-                  label="Nama Lengkap"
-                  icon={IconUser}
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Nama lengkapmu"
-                />
+                <div>
+                  <label htmlFor="login-name" className="block text-xs font-semibold text-emerald-100 mb-1 pl-3">
+                    Nama Lengkap
+                  </label>
+                  <div className="relative">
+                    <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-emerald-200">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#124230]">
+                        <IconUser size={16} />
+                      </span>
+                    </span>
+                    <input
+                      id="login-name"
+                      type="text"
+                      required
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Nama lengkapmu"
+                      className="w-full rounded-full border border-emerald-600/30 bg-[#164634] py-3.5 pl-14 pr-5 text-sm text-white placeholder-emerald-200/70 outline-none transition focus:border-emerald-400 focus:bg-[#1a513c] focus:ring-4 focus:ring-emerald-500/20"
+                    />
+                  </div>
+                </div>
               )}
 
-              <AuthTextField
-                id="username"
-                name="username"
-                label="Email"
-                icon={IconMail}
-                autoComplete="username"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="nama@email.com"
-              />
+              <div>
+                <label htmlFor="username" className="block text-xs font-semibold text-emerald-100 mb-1 pl-3">
+                  Email
+                </label>
+                <div className="relative">
+                  <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-emerald-200">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#124230]">
+                      <IconMail size={16} />
+                    </span>
+                  </span>
+                  <input
+                    id="username"
+                    name="username"
+                    autoComplete="username"
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="nama@email.com"
+                    className="w-full rounded-full border border-emerald-600/30 bg-[#164634] py-3.5 pl-14 pr-5 text-sm text-white placeholder-emerald-200/70 outline-none transition focus:border-emerald-400 focus:bg-[#1a513c] focus:ring-4 focus:ring-emerald-500/20"
+                  />
+                </div>
+              </div>
 
-              <AuthTextField
-                id="password"
-                name="password"
-                label="Password"
-                icon={IconLock}
-                autoComplete="current-password"
-                type="password"
-                minLength={6}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Minimal 6 karakter"
-              />
+              <div>
+                <label htmlFor="password" className="block text-xs font-semibold text-emerald-100 mb-1 pl-3">
+                  Password
+                </label>
+                <div className="relative">
+                  <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-emerald-200">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#124230]">
+                      <IconLock size={16} />
+                    </span>
+                  </span>
+                  <input
+                    id="password"
+                    name="password"
+                    autoComplete="current-password"
+                    type="password"
+                    required
+                    minLength={6}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Minimal 6 karakter"
+                    className="w-full rounded-full border border-emerald-600/30 bg-[#164634] py-3.5 pl-14 pr-5 text-sm text-white placeholder-emerald-200/70 outline-none transition focus:border-emerald-400 focus:bg-[#1a513c] focus:ring-4 focus:ring-emerald-500/20"
+                  />
+                </div>
+              </div>
 
               {/* Tombol Aksi Pil */}
               <button

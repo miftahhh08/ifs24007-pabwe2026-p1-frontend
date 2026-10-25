@@ -2,7 +2,7 @@ import type { ThunkAppDispatch } from "@/types/action";
 import type { LoginInput, RegisterInput, User } from "@/types";
 import { showErrorDialog, showSuccessDialog } from "@/helpers/toolsHelper";
 import { getErrorMessage } from "@/helpers/errorHelper";
-import { hasAuthSession, removeAuthToken } from "@/helpers/apiHelper";
+import { getAuthToken, removeAuthToken } from "@/helpers/apiHelper";
 import { getMeApi, loginApi, logoutApi, registerApi } from "../api/authApi";
 import { asyncSetToday } from "@/features/logs/states/action";
 
@@ -25,13 +25,14 @@ export function setIsAuthLoadingAction(isLoading: boolean): AuthAction {
 
 export function asyncCheckAuth() {
   return async (dispatch: ThunkAppDispatch) => {
-    if (!hasAuthSession()) return;
+    const token = getAuthToken();
+    if (!token) return;
     dispatch(setIsAuthLoadingAction(true));
     try {
       const user = await getMeApi();
       dispatch(setAuthUserAction(user));
     } catch {
-      await removeAuthToken();
+      removeAuthToken();
       dispatch(setAuthUserAction(null));
     } finally {
       dispatch(setIsAuthLoadingAction(false));

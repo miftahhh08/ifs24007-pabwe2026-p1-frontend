@@ -54,7 +54,7 @@ export default function FoodsPage() {
             placeholder="Contoh: es teh, martabak, bakso (tekan / untuk mencari)"
             value={q}
             onChange={onQChange}
-            className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-4 pl-12 pr-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-500/10"
+            className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-4 pl-12 pr-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-500 focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-500/10"
           />
         </div>
         <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-500"><span className="font-semibold text-slate-600">Ide pencarian:</span>{["es teh", "soda", "pisang", "martabak"].map((term) => <button key={term} type="button" onClick={() => setQ(term)} className="rounded-full border border-slate-200 bg-white px-3 py-1.5 transition hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-800">{term}</button>)}</div>
@@ -82,10 +82,10 @@ export default function FoodsPage() {
         </div>
       </section>
 
-      <aside className="flex items-start gap-3 rounded-2xl border border-sky-100 bg-sky-50/70 p-4 text-sm leading-5 text-sky-950">
+      <div role="note" className="flex items-start gap-3 rounded-2xl border border-sky-100 bg-sky-50/70 p-4 text-sm leading-5 text-sky-950">
         <IconInfoCircle size={20} className="mt-0.5 shrink-0 text-sky-700" />
         <p><strong>Catatan:</strong> kandungan gula dapat berbeda menurut resep, ukuran porsi, dan merek. Data di aplikasi adalah perkiraan untuk edukasi, bukan pengukuran laboratorium atau saran medis.</p>
-      </aside>
+      </div>
     </div>
   );
 }

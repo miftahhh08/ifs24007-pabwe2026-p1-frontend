@@ -159,7 +159,7 @@ export default function ChatPage() {
 
         {/* Daftar Gelembung Obrolan */}
         <ul
-          className="max-h-[30rem] min-h-56 space-y-4 overflow-y-auto pr-1"
+          tabIndex={0} className="max-h-[30rem] min-h-56 space-y-4 overflow-y-auto pr-1"
           role="log"
           aria-label="Percakapan"
           aria-live="polite"
@@ -215,7 +215,7 @@ export default function ChatPage() {
         {/* Saran Pertanyaan Cepat (Chips) */}
         {chips.length > 0 && (
           <div className="mt-4 pt-3 border-t border-slate-100 space-y-1.5">
-            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+            <p className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">
               Pertanyaan Cepat
             </p>
             <div className="flex flex-wrap gap-2" aria-label="Pertanyaan cepat">

@@ -35,7 +35,7 @@ export default function HelpBanner() {
 
   if (closed || !isNew) return null;
   return (
-    <aside className="relative mb-6 rounded-3xl border border-emerald-200 bg-emerald-50 p-5 pr-12 text-emerald-950" aria-label="Panduan singkat">
+    <section className="relative mb-6 rounded-3xl border border-emerald-200 bg-emerald-50 p-5 pr-12 text-emerald-950" aria-label="Panduan singkat">
       <button onClick={close} aria-label="Tutup panduan" className="absolute right-3 top-3 rounded-lg p-1.5 text-emerald-800 hover:bg-emerald-100"><IconX size={18} /></button>
       <h2 className="font-extrabold">Selamat datang di GulaSadar 👋</h2>
       <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm">
@@ -47,6 +47,6 @@ export default function HelpBanner() {
         <button onClick={close} className="rounded-lg bg-emerald-700 px-4 py-2 text-white hover:bg-emerald-800">Mengerti</button>
         <Link href="/bantuan" onClick={close} className="self-center underline">Lihat panduan lengkap</Link>
       </div>
-    </aside>
+    </section>
   );
 }

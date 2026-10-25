@@ -54,7 +54,7 @@ export default function HelpPage() {
       <section id="ai" className={cardClass}>
         <h2 className="font-extrabold text-slate-900">Mengaktifkan mode AI (opsional)</h2>
         <p className="mt-2 text-sm leading-6 text-slate-600">Tanpa pengaturan apa pun, Sobat Gula menjawab dari basis data GulaSadar. Untuk percakapan bebas dan identifikasi makanan dari foto, pasang salah satu API key di <code className="rounded bg-slate-100 px-1">backend/.env</code>, lalu restart backend:</p>
-        <pre className="mt-3 overflow-x-auto rounded-xl bg-slate-900 p-4 text-xs text-emerald-100">{`# Gemini (ada tier gratis, key di aistudio.google.com)
+        <pre tabIndex={0} aria-label="Contoh konfigurasi" className="mt-3 overflow-x-auto rounded-xl bg-slate-900 p-4 text-xs text-emerald-100">{`# Gemini (ada tier gratis, key di aistudio.google.com)
 GEMINI_API_KEY=isi_key_kamu
 
 # atau Anthropic

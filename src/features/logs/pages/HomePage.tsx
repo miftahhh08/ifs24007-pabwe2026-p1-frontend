@@ -106,7 +106,7 @@ export default function HomePage() {
             <div>
               <div className="mb-2 flex items-center justify-between gap-3 text-sm">
                 <span className="font-semibold text-slate-700">Pemakaian acuan</span>
-                <span className={`font-extrabold ${today.percent >= 100 ? "text-red-600" : today.percent >= 60 ? "text-amber-600" : "text-emerald-700"}`}>{today.percent}%</span>
+                <span className={`font-extrabold ${today.percent >= 100 ? "text-red-600" : today.percent >= 60 ? "text-amber-700" : "text-emerald-700"}`}>{today.percent}%</span>
               </div>
               <div className="h-3 overflow-hidden rounded-full bg-slate-100" role="progressbar" aria-label="Pemakaian acuan gula harian" aria-valuenow={progressWidth} aria-valuemin={0} aria-valuemax={100}>
                 <div className={`h-full rounded-full transition-all duration-500 ${barColor(today.percent)}`} style={{ width: `${progressWidth}%` }} />
@@ -122,7 +122,7 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-          <p className="mt-5 border-t border-slate-100 pt-4 text-xs leading-5 text-slate-400">Angka merupakan estimasi dari makanan yang tercatat. Acuan di aplikasi bukan target pribadi atau pengganti saran tenaga kesehatan.</p>
+          <p className="mt-5 border-t border-slate-100 pt-4 text-xs leading-5 text-slate-600">Angka merupakan estimasi dari makanan yang tercatat. Acuan di aplikasi bukan target pribadi atau pengganti saran tenaga kesehatan.</p>
         </div>
 
         <div className="flex flex-col rounded-3xl border border-emerald-100 bg-gradient-to-br from-emerald-50 to-white p-5 shadow-sm sm:p-6">
@@ -165,7 +165,7 @@ export default function HomePage() {
                 <div className="flex min-w-0 items-center gap-3">
                   <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700"><IconDroplet size={21} /></span>
                   <div className="min-w-0">
-                    <p className="font-bold text-slate-800">{log.name} <span className="font-medium text-slate-400">×{log.servings}</span></p>
+                    <p className="font-bold text-slate-800">{log.name} <span className="font-medium text-slate-600">×{log.servings}</span></p>
                     <p className="mt-1 flex items-center gap-1.5 text-xs text-slate-500"><IconClockHour4 size={14} /> {formatTime(log.eaten_at)}</p>
                   </div>
                 </div>

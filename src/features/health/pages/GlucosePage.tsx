@@ -107,7 +107,7 @@ export default function GlucosePage() {
               <span className="min-w-0">
                 <strong>{l.value} mg/dL</strong> · {CONTEXT_LABEL[l.context] ?? l.context}
                 <span className={`ml-2 rounded-full border px-2 py-0.5 text-xs font-bold ${BADGE[l.category] ?? BADGE.normal}`}>{l.category}</span>
-                <span className="ml-2 text-xs text-slate-400">{l.measured_at}</span>
+                <span className="ml-2 text-xs text-slate-600">{l.measured_at}</span>
               </span>
               <button aria-label={`Hapus catatan ${l.id}`} onClick={() => onDelete(l.id)} className="rounded-lg p-2 text-slate-400 hover:bg-red-50 hover:text-red-600"><IconTrash size={18} /></button>
             </li>

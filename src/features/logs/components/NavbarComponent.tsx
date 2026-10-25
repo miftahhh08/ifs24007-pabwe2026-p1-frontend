@@ -35,7 +35,7 @@ export default function NavbarComponent() {
   return (
     <>
       <header className="sticky top-0 z-20 border-b border-emerald-100/80 bg-white/90 backdrop-blur-xl">
-        <nav className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
           <Link href="/" className="flex min-w-0 items-center gap-3 rounded-xl focus-visible:outline-2 focus-visible:outline-emerald-600">
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-lg shadow-emerald-600/20">
               <IconDroplet size={25} stroke={2.2} />
@@ -47,7 +47,7 @@ export default function NavbarComponent() {
           </Link>
 
           <div className="flex flex-wrap items-center gap-2">
-            <div aria-label="Menu utama" role="navigation" className="flex max-w-full items-center gap-1 overflow-x-auto rounded-2xl bg-slate-100/80 p-1 sm:gap-2">
+            <nav aria-label="Menu utama" className="flex max-w-full items-center gap-1 overflow-x-auto rounded-2xl bg-slate-100/80 p-1 sm:gap-2">
               {MENUS.map(({ href, label, Icon }) => {
                 const active = pathname === href;
                 return (
@@ -66,7 +66,7 @@ export default function NavbarComponent() {
                   </Link>
                 );
               })}
-            </div>
+            </nav>
 
             <div className="flex items-center gap-1.5 pl-1">
               {authUser ? (
@@ -103,14 +103,14 @@ export default function NavbarComponent() {
               )}
             </div>
           </div>
-        </nav>
-      </header>
-      <div className="border-b border-emerald-100 bg-gradient-to-r from-emerald-50 via-white to-teal-50">
-        <div className="mx-auto flex max-w-7xl items-center gap-2 px-4 py-2 text-xs text-emerald-900 sm:px-6 sm:text-sm lg:px-8">
-          <IconLeaf size={16} className="shrink-0 text-emerald-700" />
-          <p>Langkah kecil hari ini, kebiasaan lebih sadar untuk esok hari.</p>
         </div>
-      </div>
+        <div className="border-t border-emerald-100 bg-gradient-to-r from-emerald-50 via-white to-teal-50">
+          <div className="mx-auto flex max-w-7xl items-center gap-2 px-4 py-2 text-xs text-emerald-900 sm:px-6 sm:text-sm lg:px-8">
+            <IconLeaf size={16} className="shrink-0 text-emerald-700" aria-hidden="true" />
+            <p>Langkah kecil hari ini, kebiasaan lebih sadar untuk esok hari.</p>
+          </div>
+        </div>
+      </header>
     </>
   );
 }

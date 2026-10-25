@@ -75,6 +75,7 @@ export default function PhotoIdentify() {
       const base64 = await readBase64(targetFile);
       const res = await identifyPhoto(base64, targetFile.type, targetFile.name, activeHint);
       setResult(res);
+      setAddedMap({}); // analisis ulang: status "tercatat" harus dimulai dari awal
 
       const initialServings: Record<string, number> = {};
       res.foods.forEach((f) => {

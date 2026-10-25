@@ -14,8 +14,7 @@ import {
   IconSparkles,
   IconTrash,
 } from "@tabler/icons-react";
-import { showErrorDialog } from "@/helpers/toolsHelper";
-import { getErrorMessage } from "@/helpers/errorHelper";
+import { reportError } from "@/helpers/errorHelper";
 import type { IdentifyResult } from "@/types";
 import { useAppDispatch } from "@/hooks/redux";
 import { asyncAddLog } from "@/features/logs/states/action";
@@ -44,11 +43,11 @@ export default function PhotoIdentify() {
     if (!selected) return;
 
     if (!["image/jpeg", "image/png", "image/webp"].includes(selected.type)) {
-      showErrorDialog("Format gambar harus JPEG, PNG, atau WebP");
+      reportError("Format gambar harus JPEG, PNG, atau WebP");
       return;
     }
     if (selected.size > 5 * 1024 * 1024) {
-      showErrorDialog("Ukuran gambar maksimal 5 MB");
+      reportError("Ukuran gambar maksimal 5 MB");
       return;
     }
 
@@ -83,7 +82,7 @@ export default function PhotoIdentify() {
       });
       setServingsMap(initialServings);
     } catch (error) {
-      showErrorDialog(getErrorMessage(error));
+      reportError(error);
     } finally {
       setBusy(false);
     }

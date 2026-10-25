@@ -1,7 +1,7 @@
 import type { ThunkAppDispatch } from "@/types/action";
 import type { TodayData } from "@/types";
-import { showConfirmDialog, showErrorDialog, showSuccessDialog, showUndoToast } from "@/helpers/toolsHelper";
-import { getErrorMessage } from "@/helpers/errorHelper";
+import { showConfirmDialog, showSuccessDialog, showUndoToast } from "@/helpers/toolsHelper";
+import { reportError } from "@/helpers/errorHelper";
 import { addLog, deleteLog, getToday } from "../api/logApi";
 
 export const LogActionType = {
@@ -27,7 +27,7 @@ export function asyncSetToday() {
     try {
       dispatch(receiveTodayAction(await getToday()));
     } catch (error) {
-      showErrorDialog(getErrorMessage(error));
+      reportError(error);
     } finally {
       dispatch(setIsTodayAction(false));
     }
@@ -45,7 +45,7 @@ export function asyncAddLog(foodId: string, servings: number) {
         showSuccessDialog("Catatan dibatalkan");
       }
     } catch (error) {
-      showErrorDialog(getErrorMessage(error));
+      reportError(error);
     }
   };
 }
@@ -57,7 +57,7 @@ export function asyncDeleteLog(id: number) {
       await deleteLog(id);
       await dispatch(asyncSetToday());
     } catch (error) {
-      showErrorDialog(getErrorMessage(error));
+      reportError(error);
     }
   };
 }

@@ -3,8 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { IconHeartbeat, IconRefresh } from "@tabler/icons-react";
-import { showErrorDialog } from "@/helpers/toolsHelper";
-import { getErrorMessage } from "@/helpers/errorHelper";
+import { reportError } from "@/helpers/errorHelper";
 import type { RiskInput, RiskResult } from "@/types";
 import { assessRisk } from "../api/healthApi";
 import { validateRisk } from "../validation";
@@ -52,7 +51,7 @@ export default function RiskPage() {
     try {
       setResult(await assessRisk(input));
     } catch (error) {
-      showErrorDialog(getErrorMessage(error));
+      reportError(error);
     } finally {
       setBusy(false);
     }

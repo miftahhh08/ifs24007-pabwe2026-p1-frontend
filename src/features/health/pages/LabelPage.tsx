@@ -3,8 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { IconTag, IconRefresh } from "@tabler/icons-react";
-import { showErrorDialog } from "@/helpers/toolsHelper";
-import { getErrorMessage } from "@/helpers/errorHelper";
+import { reportError } from "@/helpers/errorHelper";
 import type { LabelResult } from "@/types";
 import { calcLabel } from "../api/healthApi";
 import { validateLabel } from "../validation";
@@ -37,7 +36,7 @@ export default function LabelPage() {
     try {
       setResult(await calcLabel(Number(sugar), Number(pack), Number(eaten)));
     } catch (error) {
-      showErrorDialog(getErrorMessage(error));
+      reportError(error);
     } finally {
       setBusy(false);
     }

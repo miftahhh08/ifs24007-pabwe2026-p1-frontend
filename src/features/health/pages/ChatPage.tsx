@@ -10,8 +10,8 @@ import {
   IconBulb,
   IconBrain,
 } from "@tabler/icons-react";
-import { showConfirmDialog, showErrorDialog } from "@/helpers/toolsHelper";
-import { getErrorMessage } from "@/helpers/errorHelper";
+import { showConfirmDialog } from "@/helpers/toolsHelper";
+import { reportError } from "@/helpers/errorHelper";
 import type { ChatStatus } from "@/types";
 import { useAppSelector } from "@/hooks/redux";
 import { getChatStatus, sendChat } from "../api/healthApi";
@@ -44,7 +44,7 @@ export default function ChatPage() {
         setStatus(s);
         setChips(s.suggestions);
       })
-      .catch((error: Error) => showErrorDialog(getErrorMessage(error)));
+      .catch((error: Error) => reportError(error));
   }, []);
 
   useEffect(() => {
@@ -62,7 +62,7 @@ export default function ChatPage() {
       setMessages((m) => [...m, { from: "bot", text: res.reply }]);
       if (res.suggestions?.length) setChips(res.suggestions);
     } catch (error) {
-      showErrorDialog(getErrorMessage(error));
+      reportError(error);
     } finally {
       setBusy(false);
     }

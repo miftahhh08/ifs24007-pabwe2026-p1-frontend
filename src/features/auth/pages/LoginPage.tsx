@@ -202,12 +202,12 @@ export default function LoginPage() {
               </svg>
             </div>
 
-            <p className="mt-4 max-w-md text-center text-xs font-medium text-emerald-800/80 sm:text-sm">
+            <p className="mt-4 max-w-md text-center text-xs font-medium text-emerald-900 sm:text-sm">
               Pantau jatah <strong>50 gram gula/hari</strong>, pelajari label makanan, dan bangun kebiasaan sehat langkah demi langkah.
             </p>
           </div>
 
-          <footer className="relative z-10 text-xs text-emerald-900/60">
+          <footer className="relative z-10 text-xs text-emerald-900/80">
             © 2026 GulaSadar · Edukasi Pencegahan Diabetes
           </footer>
         </section>
@@ -230,7 +230,7 @@ export default function LoginPage() {
               <h2 className="mt-1 text-3xl font-black uppercase tracking-wider text-white sm:text-4xl">
                 {mode === "login" ? "LOGIN" : "DAFTAR"}
               </h2>
-              <p className="mt-2 text-xs text-emerald-200/70 sm:text-sm">
+              <p className="mt-2 text-xs text-emerald-100 sm:text-sm">
                 {mode === "login"
                   ? "Masuk ke akunmu untuk memantau asupan gula harian."
                   : "Buat akun baru untuk mulai perjalanan hidup sadar gula."}
@@ -248,7 +248,7 @@ export default function LoginPage() {
                 className={`flex-1 rounded-full py-2.5 transition ${
                   mode === "login"
                     ? "bg-[#276a52] text-white shadow-md"
-                    : "text-emerald-200/70 hover:text-white"
+                    : "text-emerald-100 hover:text-white"
                 }`}
               >
                 Masuk
@@ -262,7 +262,7 @@ export default function LoginPage() {
                 className={`flex-1 rounded-full py-2.5 transition ${
                   mode === "register"
                     ? "bg-[#276a52] text-white shadow-md"
-                    : "text-emerald-200/70 hover:text-white"
+                    : "text-emerald-100 hover:text-white"
                 }`}
               >
                 Daftar
@@ -280,11 +280,11 @@ export default function LoginPage() {
             <form onSubmit={handleSubmit} noValidate className="mt-6 space-y-4">
               {mode === "register" && (
                 <div>
-                  <label htmlFor="login-name" className="block text-xs font-semibold text-emerald-200/90 mb-1 pl-3">
+                  <label htmlFor="login-name" className="block text-xs font-semibold text-emerald-100 mb-1 pl-3">
                     Nama Lengkap
                   </label>
                   <div className="relative">
-                    <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-emerald-300/80">
+                    <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-emerald-200">
                       <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#124230]">
                         <IconUser size={16} />
                       </span>
@@ -296,18 +296,18 @@ export default function LoginPage() {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Nama lengkapmu"
-                      className="w-full rounded-full border border-emerald-600/30 bg-[#164634] py-3.5 pl-14 pr-5 text-sm text-white placeholder-emerald-300/40 outline-none transition focus:border-emerald-400 focus:bg-[#1a513c] focus:ring-4 focus:ring-emerald-500/20"
+                      className="w-full rounded-full border border-emerald-600/30 bg-[#164634] py-3.5 pl-14 pr-5 text-sm text-white placeholder-emerald-200/70 outline-none transition focus:border-emerald-400 focus:bg-[#1a513c] focus:ring-4 focus:ring-emerald-500/20"
                     />
                   </div>
                 </div>
               )}
 
               <div>
-                <label htmlFor="username" className="block text-xs font-semibold text-emerald-200/90 mb-1 pl-3">
+                <label htmlFor="username" className="block text-xs font-semibold text-emerald-100 mb-1 pl-3">
                   Email
                 </label>
                 <div className="relative">
-                  <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-emerald-300/80">
+                  <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-emerald-200">
                     <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#124230]">
                       <IconMail size={16} />
                     </span>
@@ -321,17 +321,17 @@ export default function LoginPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="nama@email.com"
-                    className="w-full rounded-full border border-emerald-600/30 bg-[#164634] py-3.5 pl-14 pr-5 text-sm text-white placeholder-emerald-300/40 outline-none transition focus:border-emerald-400 focus:bg-[#1a513c] focus:ring-4 focus:ring-emerald-500/20"
+                    className="w-full rounded-full border border-emerald-600/30 bg-[#164634] py-3.5 pl-14 pr-5 text-sm text-white placeholder-emerald-200/70 outline-none transition focus:border-emerald-400 focus:bg-[#1a513c] focus:ring-4 focus:ring-emerald-500/20"
                   />
                 </div>
               </div>
 
               <div>
-                <label htmlFor="password" className="block text-xs font-semibold text-emerald-200/90 mb-1 pl-3">
+                <label htmlFor="password" className="block text-xs font-semibold text-emerald-100 mb-1 pl-3">
                   Password
                 </label>
                 <div className="relative">
-                  <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-emerald-300/80">
+                  <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-emerald-200">
                     <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#124230]">
                       <IconLock size={16} />
                     </span>
@@ -346,7 +346,7 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Minimal 6 karakter"
-                    className="w-full rounded-full border border-emerald-600/30 bg-[#164634] py-3.5 pl-14 pr-5 text-sm text-white placeholder-emerald-300/40 outline-none transition focus:border-emerald-400 focus:bg-[#1a513c] focus:ring-4 focus:ring-emerald-500/20"
+                    className="w-full rounded-full border border-emerald-600/30 bg-[#164634] py-3.5 pl-14 pr-5 text-sm text-white placeholder-emerald-200/70 outline-none transition focus:border-emerald-400 focus:bg-[#1a513c] focus:ring-4 focus:ring-emerald-500/20"
                   />
                 </div>
               </div>
@@ -367,7 +367,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={handleGuestMode}
-                className="inline-flex items-center gap-2 text-xs font-semibold text-emerald-300/80 hover:text-white transition"
+                className="inline-flex items-center gap-2 text-xs font-semibold text-emerald-200 hover:text-white transition"
               >
                 <IconUserCheck size={16} />
                 <span>Lanjutkan sebagai Tamu (Mode Offline)</span>
